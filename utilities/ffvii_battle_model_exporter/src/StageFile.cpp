@@ -83,7 +83,7 @@ StageFile::GetModel( const StageInfo& info )
     // <OGRE> ///////////////////////////////
     skeleton->optimiseAllAnimations();
     Ogre::SkeletonSerializer skeleton_serializer;
-    skeleton_serializer.exportSkeleton(skeleton.getPointer(), "exported/models/ffvii/battle/stages/" + info.data.name + ".skeleton");
+    skeleton_serializer.exportSkeleton(skeleton.get(), "exported/models/ffvii/battle/stages/" + info.data.name + ".skeleton");
 
     // Update bounds
     Ogre::AxisAlignedBox aabb(-999, -999, -999, 999, 999, 999);
@@ -93,7 +93,7 @@ StageFile::GetModel( const StageInfo& info )
     mesh->setSkeletonName( "models/ffvii/battle/stages/" + info.data.name + ".skeleton" );
 
     Ogre::MeshSerializer ser;
-    ser.exportMesh(mesh.getPointer(), "exported/models/ffvii/battle/stages/" + info.data.name + ".mesh");
+    ser.exportMesh(mesh.get(), "exported/models/ffvii/battle/stages/" + info.data.name + ".mesh");
 
 
 

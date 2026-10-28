@@ -71,7 +71,7 @@ FieldModel::Export( const Ogre::String& model_file, const Ogre::String& texture_
 
         skeleton->optimiseAllAnimations();
         Ogre::SkeletonSerializer skeleton_serializer;
-        skeleton_serializer.exportSkeleton( skeleton.getPointer(), "exported/models/field/maps/" + data.name + "/" + data.name + Ogre::StringConverter::toString( i ) + ".skeleton" );
+        skeleton_serializer.exportSkeleton( skeleton.get(), "exported/models/field/maps/" + data.name + "/" + data.name + Ogre::StringConverter::toString( i ) + ".skeleton" );
 
         // Update bounds
         Ogre::AxisAlignedBox aabb( -999, -999, -999, 999, 999, 999 );
@@ -81,7 +81,7 @@ FieldModel::Export( const Ogre::String& model_file, const Ogre::String& texture_
         mesh->setSkeletonName( "models/field/maps/" + data.name + "/" + data.name + Ogre::StringConverter::toString( i ) + ".skeleton" );
 
         Ogre::MeshSerializer ser;
-        ser.exportMesh( mesh.getPointer(), "exported/models/field/maps/" + data.name + "/" + data.name + Ogre::StringConverter::toString( i ) + ".mesh" );
+        ser.exportMesh( mesh.get(), "exported/models/field/maps/" + data.name + "/" + data.name + Ogre::StringConverter::toString( i ) + ".mesh" );
     }
 
 

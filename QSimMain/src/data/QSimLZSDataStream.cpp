@@ -183,7 +183,7 @@ namespace QSim
     void
     LZSDataStream::close( void )
     {
-        m_compressed_stream.setNull();
+        m_compressed_stream.reset();
     }
 
     //---------------------------------------------------------------------

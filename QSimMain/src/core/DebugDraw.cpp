@@ -1,4 +1,5 @@
 #include "core/DebugDraw.h"
+#include "common/QSimManualRenderable.h"
 #include <OgreFontManager.h>
 #include <OgreHardwareBufferManager.h>
 #include <OgreMaterialManager.h>
@@ -51,8 +52,12 @@ DebugDraw::DebugDraw():
     pass->setLightingEnabled(false);
     pass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
 
-    m_Font = Ogre::FontManager::getSingleton().getByName("CourierNew");
-    if(m_Font.isNull())
+    // load now: Vulkan can not upload textures while a frame is being rendered
+    m_Material->load();
+    m_Material3d->load();
+
+    m_Font = Ogre::FontManager::getSingleton().getByName("CourierNew", Ogre::RGN_AUTODETECT);
+    if(!m_Font)
     {
         LOG_ERROR("Could not find font \"CourierNew\" for debug draw.");
         throw std::runtime_error("Font load failure");
@@ -451,7 +456,7 @@ DebugDraw::Text(const Ogre::Vector3& point, const float x, const float y, const 
 
     if(point2d.z <= 0)
     {
-        float dist_sq = point.squaredDistance(CameraManager::getSingleton().GetCurrentCamera()->getPosition());
+        float dist_sq = point.squaredDistance(CameraManager::getSingleton().GetCurrentCamera()->getDerivedPosition());
 
         if(dist_sq < m_FadeEndSquare)
         {
@@ -471,48 +476,37 @@ DebugDraw::renderQueueEnded(Ogre::uint8 queueGroupId, const Ogre::String& invoca
     if(queueGroupId == Ogre::RENDER_QUEUE_OVERLAY)
     {
         m_RenderSystem->clearFrameBuffer(Ogre::FBT_DEPTH);
-        m_RenderSystem->_setWorldMatrix(Ogre::Matrix4::IDENTITY);
-        m_RenderSystem->_setViewMatrix(Ogre::Matrix4::IDENTITY);
-        m_RenderSystem->_setProjectionMatrix(Ogre::Matrix4::IDENTITY);
 
         if(m_LineRenderOp.vertexData->vertexCount != 0)
         {
-            m_SceneManager->_setPass(m_Material->getTechnique(0)->getPass(0), true, false);
-            m_RenderSystem->_render(m_LineRenderOp);
+            QSim::ManualRenderable::renderInClipSpace(m_SceneManager, m_LineRenderOp, m_Material);
             m_LineRenderOp.vertexData->vertexCount = 0;
         }
 
         if(m_QuadRenderOp.vertexData->vertexCount != 0)
         {
-            m_SceneManager->_setPass(m_Material->getTechnique(0)->getPass(0), true, false);
-            m_RenderSystem->_render(m_QuadRenderOp);
+            QSim::ManualRenderable::renderInClipSpace(m_SceneManager, m_QuadRenderOp, m_Material);
             m_QuadRenderOp.vertexData->vertexCount = 0;
         }
 
         if(m_TextRenderOp.vertexData->vertexCount != 0)
         {
-            m_SceneManager->_setPass(m_Font->getMaterial()->getTechnique(0)->getPass(0), true, false);
-            m_RenderSystem->_render(m_TextRenderOp);
+            QSim::ManualRenderable::renderInClipSpace(m_SceneManager, m_TextRenderOp, m_Font->getMaterial());
             m_TextRenderOp.vertexData->vertexCount = 0;
         }
     }
     else if(queueGroupId == Ogre::RENDER_QUEUE_MAIN)
     {
-        m_RenderSystem->_setWorldMatrix(Ogre::Matrix4::IDENTITY);
-        m_RenderSystem->_setViewMatrix(CameraManager::getSingleton().GetCurrentCamera()->getViewMatrix());
-        m_RenderSystem->_setProjectionMatrix(CameraManager::getSingleton().GetCurrentCamera()->getProjectionMatrix());
 
         if(m_Line3dRenderOp.vertexData->vertexCount != 0)
         {
-            m_SceneManager->_setPass(m_Material3d->getTechnique(0)->getPass(0), true, false);
-            m_RenderSystem->_render(m_Line3dRenderOp);
+            QSim::ManualRenderable::renderWithCamera(m_SceneManager, m_Line3dRenderOp, m_Material3d);
             m_Line3dRenderOp.vertexData->vertexCount = 0;
         }
 
         if(m_Triangle3dRenderOp.vertexData->vertexCount != 0)
         {
-            m_SceneManager->_setPass(m_Material3d->getTechnique(0)->getPass(0), true, false);
-            m_RenderSystem->_render(m_Triangle3dRenderOp);
+            QSim::ManualRenderable::renderWithCamera(m_SceneManager, m_Triangle3dRenderOp, m_Material3d);
             m_Triangle3dRenderOp.vertexData->vertexCount = 0;
         }
     }
@@ -546,7 +540,7 @@ DebugDraw::DestroyLineVertexBuffer()
 {
     delete m_LineRenderOp.vertexData;
     m_LineRenderOp.vertexData = 0;
-    m_LineVertexBuffer.setNull();
+    m_LineVertexBuffer.reset();
     m_LineMaxVertexCount = 0;
 }
 
@@ -578,7 +572,7 @@ DebugDraw::DestroyLine3dVertexBuffer()
 {
     delete m_Line3dRenderOp.vertexData;
     m_Line3dRenderOp.vertexData = 0;
-    m_Line3dVertexBuffer.setNull();
+    m_Line3dVertexBuffer.reset();
     m_Line3dMaxVertexCount = 0;
 }
 
@@ -610,7 +604,7 @@ DebugDraw::DestroyTriangle3dVertexBuffer()
 {
     delete m_Triangle3dRenderOp.vertexData;
     m_Triangle3dRenderOp.vertexData = 0;
-    m_Triangle3dVertexBuffer.setNull();
+    m_Triangle3dVertexBuffer.reset();
     m_Triangle3dMaxVertexCount = 0;
 }
 
@@ -642,7 +636,7 @@ DebugDraw::DestroyQuadVertexBuffer()
 {
     delete m_QuadRenderOp.vertexData;
     m_QuadRenderOp.vertexData = 0;
-    m_QuadVertexBuffer.setNull();
+    m_QuadVertexBuffer.reset();
     m_QuadMaxVertexCount = 0;
 }
 
@@ -676,6 +670,6 @@ DebugDraw::DestroyTextVertexBuffer()
 {
     delete m_TextRenderOp.vertexData;
     m_TextRenderOp.vertexData = 0;
-    m_TextVertexBuffer.setNull();
+    m_TextVertexBuffer.reset();
     m_TextMaxVertexCount = 0;
 }

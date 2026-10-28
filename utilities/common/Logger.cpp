@@ -1,3 +1,4 @@
+#include <sstream>
 #include "Logger.h"
 #include "common/FileSystem.h"
 

@@ -55,7 +55,7 @@ ViewerModule::ViewerModule():
     grid->end();
     Ogre::MeshPtr mesh = grid->convertToMesh("grid");
     Ogre::MeshSerializer ser;
-    ser.exportMesh(mesh.getPointer(), "grid.mesh");
+    ser.exportMesh(mesh.get(), "grid.mesh");
 
     Ogre::ManualObject* m_Axis = new Ogre::ManualObject("Axis");
     m_Axis->begin("viewer/axis", Ogre::RenderOperation::OT_LINE_LIST);
@@ -65,7 +65,7 @@ ViewerModule::ViewerModule():
     m_Axis->position(0, 0, 0); m_Axis->colour(0, 0, 1.0f); m_Axis->position(0, 0, axis_size); m_Axis->colour(0, 0, 1.0f);
     m_Axis->end();
     mesh = m_Axis->convertToMesh("axis");
-    ser.exportMesh(mesh.getPointer(), "axis.mesh");
+    ser.exportMesh(mesh.get(), "axis.mesh");
 */
 
 /*
@@ -107,7 +107,7 @@ ViewerModule::ViewerModule():
     no_model->end();
     m_SceneNode->attachObject(no_model);
 //    mesh = m_Axis->convertToMesh("axis");
-//    ser.exportMesh(mesh.getPointer(), "axis.mesh");
+//    ser.exportMesh(mesh.get(), "axis.mesh");
 */
 
     m_Grid = Ogre::Root::getSingleton().getSceneManager( "Scene" )->createEntity( "Grid", "system/grid.mesh" );

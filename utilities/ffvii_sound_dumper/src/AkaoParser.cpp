@@ -1,3 +1,5 @@
+#include <iostream>
+#include <iomanip>
 #include "AkaoParser.h"
 
 #include "engine/SoundManager.h"

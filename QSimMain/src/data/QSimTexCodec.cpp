@@ -34,7 +34,6 @@ using Ogre::Codec;
 using Ogre::DataStreamPtr;
 using Ogre::Exception;
 using Ogre::LogManager;
-using Ogre::MemoryDataStreamPtr;
 using Ogre::String;
 using Ogre::StringUtil;
 
@@ -60,33 +59,21 @@ namespace QSim
         return ms_type_name;
     }
 
-    Ogre::DataStreamPtr TexCodec::encode(Ogre::MemoryDataStreamPtr& input, CodecDataPtr& pData) const
-    {
-        OGRE_EXCEPT(Exception::ERR_NOT_IMPLEMENTED, "Encoding not yet supported", "TexImageCodec::encode");
-    }
-
-    void TexCodec::encodeToFile(Ogre::MemoryDataStreamPtr& input, const Ogre::String& outFileName, CodecDataPtr& pData) const
-    {
-        OGRE_EXCEPT(Exception::ERR_NOT_IMPLEMENTED, "Encoding not yet supported", "TexImageCodec::encodeToFile");
-    }
-
     //---------------------------------------------------------------------
-    Codec::DecodeResult TexCodec::decode( DataStreamPtr& input ) const
+    void TexCodec::decode( const DataStreamPtr& input, const Ogre::Any& output ) const
     {
+        Ogre::Image* image( Ogre::any_cast<Ogre::Image*>( output ) );
         TexFile tex_file;
-        tex_file.read( input );
-
-        DecodeResult ret;
-        ret.first = MemoryDataStreamPtr( tex_file.getPixelData() );
-        ret.second = Codec::CodecDataPtr( tex_file.getImageData() );
-        return ret;
+        DataStreamPtr stream( input );
+        tex_file.read( stream );
+        tex_file.toImage( *image );
     }
 
     //---------------------------------------------------------------------
     String TexCodec::magicNumberToFileExt(const char *magicNumberPtr, size_t maxbytes) const
     {
         LogManager::getSingleton().logMessage( "TexImageCodec::magicNumberToFileExt: No Magic Number for TexImageCodec" );
-        return StringUtil::BLANK;
+        return Ogre::BLANKSTRING;
     }
 
     //---------------------------------------------------------------------

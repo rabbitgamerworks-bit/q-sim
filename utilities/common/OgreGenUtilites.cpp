@@ -9,7 +9,7 @@ CreateTextureFromVram( const Ogre::PixelBox& pb, Vram* vram, const int start_x, 
 {
     for( u32 y = 0; y < 256; ++y )
     {
-        u32* data = static_cast< u32* >( pb.data ) + ( y + start_y ) * pb.rowPitch;
+        u32* data = reinterpret_cast< u32* >( pb.data ) + ( y + start_y ) * pb.rowPitch;
 
         for( u32 x = 0; x < 256; ++x )
         {

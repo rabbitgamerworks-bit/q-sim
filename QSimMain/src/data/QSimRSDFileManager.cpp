@@ -63,7 +63,7 @@ namespace QSim
     void
     RSDFileManager::parseScript( Ogre::DataStreamPtr &stream, const String &groupName )
     {
-        RSDFilePtr  rsd = createResource( stream->getName(), groupName ).staticCast<RSDFile>();
+        RSDFilePtr  rsd = Ogre::static_pointer_cast<RSDFile>(createResource( stream->getName(), groupName ));
         rsd->load();
     }
 

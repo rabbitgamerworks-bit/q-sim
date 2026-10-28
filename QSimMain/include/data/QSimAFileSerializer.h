@@ -50,7 +50,7 @@ namespace QSim
         };
 
     protected:
-        virtual void    readFileHeader( Ogre::DataStreamPtr &stream ) override final;
+        void    readFileHeader( Ogre::DataStreamPtr &stream );
         void    readObject( Ogre::DataStreamPtr &stream, AFile::Frame &pDest );
         using Serializer::readObject;
 

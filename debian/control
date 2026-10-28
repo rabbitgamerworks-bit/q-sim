@@ -2,7 +2,8 @@ Source: q-sim
 Section: games
 Priority: extra
 Maintainer: Chris Rizzitello <sithlord48@gmail.com>
-Build-Depends: debhelper(>= 7.0.50~),libogre-1.9-dev, cmake, cdbs,libois-dev,libboost-program-options-dev,libboost-filesystem-dev,libvorbis-dev,libopenal-dev,libboost-test-dev,zlib1g-dev,libqt4-dev
+# OGRE 14 with the Vulkan render system is not packaged yet, see readme.md
+Build-Depends: debhelper(>= 7.0.50~), cmake (>= 3.16), cdbs, libvulkan-dev, glslang-dev, libx11-dev, libois-dev, libboost-program-options-dev, libboost-filesystem-dev, libvorbis-dev, libopenal-dev, libboost-test-dev, zlib1g-dev, qt6-base-dev
 Standards-Version: 3.9.5
 Homepage: https://github.com/rabbitgamerworks-bit/q-sim
 Vcs-Git: git://https://github.com/rabbitgamerworks-bit/q-sim.git

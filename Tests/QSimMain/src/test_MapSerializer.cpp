@@ -1,3 +1,5 @@
+#include "common/QSimNativeWindow.h"
+#include "common/QSimRTShaderSystem.h"
 #include <fstream>
 
 //#include <boost/test/unit_test.hpp>
@@ -79,13 +81,13 @@ public:
 
     bool frameStarted( const Ogre::FrameEvent& evt )
     {
-        auto pos = mainCam->getPosition();
+        auto pos = mainCam->getParentSceneNode()->getPosition();
 
         //pos.x += 1.0f;
 
         //pos.z += 1.0f;
 
-        mainCam->setPosition(pos);
+        mainCam->getParentSceneNode()->setPosition(pos);
 
         return true;
     }
@@ -97,7 +99,7 @@ int main(int argc, char **argv)
     Root *root = new Root();
     // choose renderer
 
-    if(!root->showConfigDialog())
+    if(!QSim::RTShaderSystem::configureRenderSystem(*root, true))
     {
         return 0;
     }
@@ -107,13 +109,17 @@ int main(int argc, char **argv)
 
 
     // create main window
-    RenderWindow *renderWindow = root->createRenderWindow("Main",320,240,false);
+    RenderWindow *renderWindow = QSim::NativeWindow::createRenderWindow(*root, "Main", 320, 240, false);
     // create the scene
-    SceneManager *sceneMgr = root->createSceneManager(Ogre::ST_GENERIC);
+    SceneManager *sceneMgr = root->createSceneManager(Ogre::SMT_DEFAULT);
     // add a camera
+    QSim::RTShaderSystem::initialise();
+    QSim::RTShaderSystem::registerSceneManager(sceneMgr);
     mainCam = sceneMgr->createCamera("MainCam");
+    sceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(mainCam);
     // add viewport
     Viewport *vp = renderWindow->addViewport(mainCam);
+    QSim::RTShaderSystem::registerViewport(vp);
 
 
     Ogre::ArchiveManager::getSingleton().addArchiveFactory( new QSim::LGPArchiveFactory() );
@@ -124,9 +130,9 @@ int main(int argc, char **argv)
 
     QSim::MapFileManager* worldManager = new QSim::MapFileManager();
 
-    Root::getSingleton().addResourceLocation(".", "FileSystem");
-    Root::getSingleton().addResourceLocation("/home/paul/qsim/data/cd1pc/wm", "FileSystem", "TEST");
-    Root::getSingleton().addResourceLocation("/home/paul/qsim/data/cd1pc/wm/world_us.lgp", QSim::LGPArchiveFactory::ARCHIVE_TYPE, "TEST");
+    ResourceGroupManager::getSingleton().addResourceLocation(".", "FileSystem");
+    ResourceGroupManager::getSingleton().addResourceLocation("/home/paul/qsim/data/cd1pc/wm", "FileSystem", "TEST");
+    ResourceGroupManager::getSingleton().addResourceLocation("/home/paul/qsim/data/cd1pc/wm/world_us.lgp", QSim::LGPArchiveFactory::ARCHIVE_TYPE, "TEST");
 
 
     QSim::TexCodec::install();

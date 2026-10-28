@@ -2,6 +2,8 @@
 
 #include <Ogre.h>
 #include <OgreOverlayManager.h>
+#include <OgreOverlay.h>
+#include <OgreMaterialManager.h>
 
 #include "Walkmesh.h"
 #include "../../Main.h"
@@ -15,7 +17,7 @@ Walkmesh::Walkmesh(void)
 {
     mRenderOp.vertexData = new Ogre::VertexData();
 
-    this->setMaterial("field/walkmesh");
+    this->setMaterial(Ogre::MaterialManager::getSingleton().getByName("field/walkmesh", Ogre::RGN_AUTODETECT));
 
     m_Overlay = Ogre::OverlayManager::getSingleton().create("WalkmeshDebugOverlay");
     m_Overlay->setZOrder(10);

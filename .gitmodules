@@ -1,10 +1,6 @@
 [submodule "dependencies/tinyxml"]
 	path = dependencies/tinyxml
 	url = https://github.com/paulsapps/TinyXML.git
-[submodule "dependencies/luabind"]
-	path = dependencies/luabind
-	url = https://github.com/paulsapps/luabind.git
-	branch = master
 [submodule "output/data"]
 	path = output/data
 	url = https://github.com/q-gears/data.git
@@ -13,9 +9,3 @@
 	path = dependencies/luajit
 	url = https://github.com/q-gears/luajit.git
 	branch = master
-[submodule "dependencies/SUDM"]
-	path = dependencies/SUDM
-	url = https://github.com/paulsapps/SUDM.git
-[submodule "dependencies/cotire"]
-	path = dependencies/cotire
-	url = https://github.com/sakra/cotire

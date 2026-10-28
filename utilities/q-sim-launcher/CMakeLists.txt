@@ -1,9 +1,10 @@
-find_package ( Qt4 REQUIRED )
-include ( ${QT_USE_FILE} )
-include_directories (
-	${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
-	${QT_QTCORE_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR}
-	)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+message(STATUS "q-sim-launcher: using Qt ${QT_VERSION}")
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+
 set ( q-sim-launcher_HDRS
 	src/mainwindow.h
 	src/ff7DataInstaller.h
@@ -20,17 +21,11 @@ set ( q-sim-launcher_SRCS
 set ( q-sim-launcher_UIS
 	src/mainwindow.ui
 	)
-QT4_WRAP_UI(UIS ${q-sim-launcher_UIS})
-
-set ( q-sim-launcher_MOCS
-	src/mainwindow.h
-	)
-QT4_WRAP_CPP(MOCS ${q-sim-launcher_MOCS})
 
 add_definitions(
     -DQSIM_ADD_MANAGERS
 )
-add_executable ( q-sim-launcher ${q-sim-launcher_SRCS} ${UIS} ${RSCS} ${TRS} ${MOCS} )
+add_executable ( q-sim-launcher ${q-sim-launcher_SRCS} ${q-sim-launcher_HDRS} ${q-sim-launcher_UIS} )
 
 SET_PROPERTY(TARGET q-sim-launcher PROPERTY FOLDER "utilities")
 
@@ -53,7 +48,7 @@ set(LIBRARIES
 )
 
 
-target_link_libraries ( q-sim-launcher  ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${LIBRARIES})
+target_link_libraries ( q-sim-launcher Qt${QT_VERSION_MAJOR}::Widgets ${LIBRARIES})
 
 if(WIN32 OR APPLE)
   install(TARGETS q-sim-launcher DESTINATION . ) 

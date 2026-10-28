@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE( mesh_export )
     Ogre::MeshPtr mesh( Ogre::MeshManager::getSingleton().create( name, "General" ) );
     mesh->setSkeletonName( filename_skeleton );
 
-    QSim::ManualObject mo( mesh.getPointer() );
+    QSim::ManualObject mo( mesh.get() );
     mo.begin( "sub_name1", "material1", 3, 3 );
     mo.position( Ogre::Vector3( 0, 0, 0 ) );
     mo.normal( Ogre::Vector3( 0, 0, 1 ) );
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE( mesh_export )
     // TODO use XMLMeshSerializer from converter, binary mesh can change
     // without data actually differing
     Ogre::MeshSerializer m_ser;
-    m_ser.exportMesh( mesh.getPointer(), filename_mesh );
+    m_ser.exportMesh( mesh.get(), filename_mesh );
 
     std::ifstream actual( filename_mesh );
     std::ifstream expected( "reference.mesh" );

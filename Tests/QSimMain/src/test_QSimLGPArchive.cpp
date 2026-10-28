@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE( load )
     BOOST_CHECK_EQUAL( filename_2, found->at( 1 ) );
 
     Ogre::DataStreamPtr stream( lgp.open( filename_1 ) );
-    BOOST_CHECK_EQUAL( false, stream.isNull() );
+    BOOST_CHECK_EQUAL( false, !stream );
     BOOST_CHECK_EQUAL( entry.data_size, stream->size() );
     BOOST_CHECK_EQUAL( "data of file 1 for test!", stream->getLine() );
     BOOST_CHECK_EQUAL( true, stream->eof() );

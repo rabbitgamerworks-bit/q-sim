@@ -1,11 +1,15 @@
+#include "common/QSimNativeWindow.h"
 #include "OgreBase.h"
 #include <OgreFontManager.h>
+#include "common/QSimRTShaderSystem.h"
+#include "common/QSimLegacyScripts.h"
 
 Ogre::Root*                     root;
 Ogre::RenderWindow*             window;
 std::vector< Ogre::Entity* >    entitys;
 Ogre::Camera                   *camera;
 DisplayFrameListener           *frame_listener;
+Ogre::OverlaySystem            *overlay_system;
 
 void
 InitializeOgreBase( const Ogre::String& name )
@@ -16,27 +20,19 @@ InitializeOgreBase( const Ogre::String& name )
 
     Ogre::String ressource_cfg("");
     Ogre::String plugins_cfg("");
-    Ogre::String dyn_lib_ext("");
-    Ogre::String render_system("");
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-    dyn_lib_ext = ".dll";
-#else // Assume Linux for now
-    dyn_lib_ext = ".so";
-#endif
 
 #ifdef NDEBUG
     ressource_cfg = "resources.cfg";
     plugins_cfg = "plugins.cfg";
-    render_system = "./RenderSystem_GL" + dyn_lib_ext;
 #else
     ressource_cfg = "resources_d.cfg";
     plugins_cfg = "plugins_d.cfg";
-    render_system = "./RenderSystem_GL_d" + dyn_lib_ext;
 #endif
 
     // init root early
     root = new Ogre::Root( plugins_cfg );
+    // exported data may still use the Ogre 1.4 mesh format
+    Ogre::MeshSerializer::enablePre1_8Formats( true );
 
     // set up resources
     // Load resource paths from config file
@@ -61,19 +57,18 @@ InitializeOgreBase( const Ogre::String& name )
         }
     }
 
-    // configure
-    // Show the configuration dialog and initialise the system
-    // You can skip this and use root.restoreConfig() to load configuration
-    // settings if you were sure there are valid ones saved in ogre.cfg
-    if( !root->restoreConfig() && !root->showConfigDialog() )
+    // configure: saved config or Vulkan by default
+    if( !QSim::RTShaderSystem::configureRenderSystem( *root, false ) )
     {
-        root->setRenderSystem( root->getAvailableRenderers()[ 0 ] );
+        OGRE_EXCEPT( Ogre::Exception::ERR_RENDERINGAPI_ERROR, "No render system available", "InitializeOgreBase" );
     }
 
     root->initialise( false );
     Ogre::NameValuePairList misc;
     misc[ "title" ] = name;
-    window = root->createRenderWindow( "QSimWindow", 800, 600, false, &misc );
+    window = QSim::NativeWindow::createRenderWindow( *root, name, 800, 600, false, &misc );
+    QSim::RTShaderSystem::initialise();
+    QSim::LegacyScriptListener::install();
 
 
     // initialize resource
@@ -84,27 +79,36 @@ InitializeOgreBase( const Ogre::String& name )
     Ogre::SceneManager* scene_manager;
     Ogre::Viewport*     viewport;
 
-    Ogre::FontManager* fmgr = new Ogre::FontManager;
-    Ogre::OverlayManager* overlay = new Ogre::OverlayManager();
+    // creates the FontManager and OverlayManager
+    overlay_system = new Ogre::OverlaySystem();
 
     frame_listener = new DisplayFrameListener( window );
     root->addFrameListener( frame_listener );
 
-    scene_manager = root->createSceneManager( Ogre::ST_GENERIC, "Scene" );
+    scene_manager = root->createSceneManager( Ogre::SMT_DEFAULT, "Scene" );
+    scene_manager->addRenderQueueListener( overlay_system );
+    QSim::RTShaderSystem::registerSceneManager( scene_manager );
     scene_manager->clearScene();
     scene_manager->setAmbientLight( Ogre::ColourValue( 0.5, 0.5, 0.5 ) );
     Ogre::Light* directionalLight = scene_manager->createLight("directionalLight");
     directionalLight->setType( Ogre::Light::LT_DIRECTIONAL );
     directionalLight->setDiffuseColour( Ogre::ColourValue( 0.5, 0.5, 0.5) );
     directionalLight->setSpecularColour( Ogre::ColourValue( 0.5, 0.5, 0.5) );
-    directionalLight->setDirection( Ogre::Vector3( 0, 0, -1 ) );
+    // Since Ogre 1.10 lights take their direction from their scene node
+    Ogre::SceneNode* light_node = scene_manager->getRootSceneNode()->createChildSceneNode();
+    light_node->attachObject(directionalLight);
+    light_node->setDirection(Ogre::Vector3( 0, 0, -1 ), Ogre::Node::TS_WORLD);
 
     camera = scene_manager->createCamera( "Camera" );
     camera->setNearClipDistance( 0.01f );
-    camera->setPosition( 0, 5, 10 );
-    camera->lookAt( 0, 0, 0 );
+    Ogre::SceneNode* camera_node = scene_manager->getRootSceneNode()->createChildSceneNode( "CameraNode" );
+    camera_node->setFixedYawAxis( true );
+    camera_node->attachObject( camera );
+    camera_node->setPosition( 0, 5, 10 );
+    camera_node->lookAt( Ogre::Vector3( 0, 0, 0 ), Ogre::Node::TS_WORLD );
 
     viewport = window->addViewport( camera );
+    QSim::RTShaderSystem::registerViewport( viewport );
     viewport->setBackgroundColour( Ogre::ColourValue( 0.0f, 0.4f, 0.0f ) );
     camera->setAspectRatio( Ogre::Real( viewport->getActualWidth() ) / Ogre::Real( viewport->getActualHeight() ) );
 
@@ -118,6 +122,10 @@ DeinitializeOgreBase()
 {
     delete LOGGER;
 
-    delete root;
     delete frame_listener;
+    frame_listener = nullptr;
+    QSim::RTShaderSystem::shutdown();
+    delete overlay_system;
+    overlay_system = nullptr;
+    delete root;
 }

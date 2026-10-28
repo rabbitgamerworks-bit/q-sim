@@ -46,7 +46,7 @@ Vram::Save(const Ogre::String& file)
     buffer = ptex->getBuffer(0, 0);
     buffer->lock(Ogre::HardwareBuffer::HBL_DISCARD);
     const Ogre::PixelBox& pb = buffer->getCurrentLock();
-    u32* data = static_cast<u32*>(pb.data);
+    u32* data = reinterpret_cast< u32* >( pb.data );
 
     for( int i = 0, size = m_Width * m_Height / 2; i < size; ++i )
     {

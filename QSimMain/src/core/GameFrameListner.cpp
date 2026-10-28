@@ -1,3 +1,4 @@
+#include "common/QSimNativeWindow.h"
 #include <OgreStringConverter.h>
 
 #include "QSimGameState.h"
@@ -28,7 +29,7 @@ GameFrameListener::GameFrameListener(Ogre::RenderWindow* win):
     size_t windowHnd = 0;
     std::ostringstream windowHndStr;
 
-    win->getCustomAttribute("WINDOW", &windowHnd);
+    windowHnd = QSim::NativeWindow::getHandle(win);
     windowHndStr << windowHnd;
     pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
 
@@ -51,7 +52,7 @@ GameFrameListener::GameFrameListener(Ogre::RenderWindow* win):
     windowResized(m_Window);
 
     //Register as a Window listener
-    Ogre::WindowEventUtilities::addWindowEventListener(m_Window, this);
+    QSim::NativeWindow::addWindowEventListener(m_Window, this);
 }
 
 
@@ -63,7 +64,7 @@ GameFrameListener::~GameFrameListener()
     OIS::InputManager::destroyInputSystem(m_InputManager);
 
     //Remove ourself as a Window listener
-    Ogre::WindowEventUtilities::removeWindowEventListener(m_Window, this);
+    QSim::NativeWindow::removeWindowEventListener(m_Window, this);
     windowClosed(m_Window);
 }
 
@@ -71,6 +72,9 @@ GameFrameListener::~GameFrameListener()
 bool
 GameFrameListener::frameStarted(const Ogre::FrameEvent& evt)
 {
+    // Root::startRendering no longer pumps window messages since Ogre 1.10
+    QSim::NativeWindow::messagePump();
+
     Timer::getSingleton().AddTime(evt.timeSinceLastFrame);
 
     if(QSim::g_ApplicationState == QSim::G_EXIT)

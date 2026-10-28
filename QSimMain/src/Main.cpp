@@ -1,3 +1,4 @@
+#include <iostream>
 #include <OgreRoot.h>
 #include <OgreConfigFile.h>
 #include <OgreArchiveManager.h>
@@ -51,7 +52,8 @@ main(int argc, char *argv[])
 
         // set scene camera and viewport for other moduls
         // create this before initialize particle because some of them use scene to create themself
-        scene_manager = root->createSceneManager(Ogre::ST_GENERIC, "Scene");
+        scene_manager = root->createSceneManager(Ogre::SMT_DEFAULT, "Scene");
+        QSim::Application::registerSceneManager(scene_manager);
         scene_manager->setAmbientLight(Ogre::ColourValue(1, 1, 1));
         scene_manager->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
 
@@ -59,15 +61,19 @@ main(int argc, char *argv[])
         directionalLight->setType(Ogre::Light::LT_DIRECTIONAL);
         directionalLight->setDiffuseColour(Ogre::ColourValue(0.5, 0.5, 0.5));
         directionalLight->setSpecularColour(Ogre::ColourValue(0.0, 0.0, 0.0));
-        directionalLight->setDirection(Ogre::Vector3(0, 1, 0));
+        // Since Ogre 1.10 lights take their direction from their scene node
+        Ogre::SceneNode* light_node = scene_manager->getRootSceneNode()->createChildSceneNode();
+        light_node->attachObject(directionalLight);
+        light_node->setDirection(Ogre::Vector3(0, 1, 0), Ogre::Node::TS_WORLD);
 
         // auto fontManager = std::make_unique<Ogre::FontManager>();
 
         QSim::MapFileManager* worldManager = new QSim::MapFileManager();
 
-        Ogre::Root::getSingleton().addResourceLocation(".", "FileSystem");
-        Ogre::Root::getSingleton().addResourceLocation("./data/wm", "FileSystem", "TEST");
-        Ogre::Root::getSingleton().addResourceLocation("./data/wm/world_us.lgp", QSim::LGPArchiveFactory::ARCHIVE_TYPE, "TEST");
+        Ogre::ResourceGroupManager& resource_group_manager = Ogre::ResourceGroupManager::getSingleton();
+        resource_group_manager.addResourceLocation(".", "FileSystem");
+        resource_group_manager.addResourceLocation("./data/wm", "FileSystem", "TEST");
+        resource_group_manager.addResourceLocation("./data/wm/world_us.lgp", QSim::LGPArchiveFactory::ARCHIVE_TYPE, "TEST");
 
 
         Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
@@ -103,6 +109,14 @@ main(int argc, char *argv[])
 
         // init after game managers because it attach them to script
         auto script_manager = std::make_unique<ScriptManager>();
+        // entities and widgets unregister from the script manager when destroyed,
+        // so they must go first, also when an exception unwinds this scope
+        struct ScriptUsersGuard
+        {
+            std::unique_ptr<EntityManager>& entities;
+            std::unique_ptr<UiManager>& ui;
+            ~ScriptUsersGuard() { entities.reset(); ui.reset(); }
+        } script_users_guard{entity_manager, ui_manager};
 
         // set base listner for usual game moduls
         auto frame_listener = std::make_unique<GameFrameListener>(window);

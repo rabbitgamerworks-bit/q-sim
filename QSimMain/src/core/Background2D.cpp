@@ -4,6 +4,7 @@
 #include <OgreException.h>
 
 #include "core/Background2D.h"
+#include "common/QSimManualRenderable.h"
 #include "core/CameraManager.h"
 #include "core/ConfigVar.h"
 #include "core/DebugDraw.h"
@@ -83,6 +84,11 @@ Background2D::Background2D():
     tex->setTextureName("system/blank.png");
     tex->setNumMipmaps(-1);
     tex->setTextureFiltering(Ogre::TFO_NONE);
+
+    // load now: Vulkan can not upload textures while a frame is being rendered
+    m_AlphaMaterial->load();
+    m_AddMaterial->load();
+    m_SubtractMaterial->load();
 
     m_SceneManager->addRenderQueueListener(this);
 }
@@ -860,33 +866,26 @@ Background2D::renderQueueEnded(Ogre::uint8 queueGroupId, const Ogre::String& inv
 
     if(queueGroupId == Ogre::RENDER_QUEUE_MAIN)
     {
-        m_RenderSystem->_setWorldMatrix(Ogre::Matrix4::IDENTITY);
-        m_RenderSystem->_setProjectionMatrix(Ogre::Matrix4::IDENTITY);
-
         Ogre::Viewport *viewport(CameraManager::getSingleton().getViewport());
         float width = static_cast<float>(viewport->getActualWidth());
         float height = static_cast<float>(viewport->getActualHeight());
 
         Ogre::Matrix4 view;
         view.makeTrans(Ogre::Vector3(m_PositionReal.x * 2 / width, -m_PositionReal.y * 2 / height, 0));
-        m_RenderSystem->_setViewMatrix(view);
 
         if(m_AlphaRenderOp.vertexData->vertexCount != 0)
         {
-            m_SceneManager->_setPass(m_AlphaMaterial->getTechnique(0)->getPass(0), true, false);
-            m_RenderSystem->_render(m_AlphaRenderOp);
+            QSim::ManualRenderable::renderInClipSpace(m_SceneManager, m_AlphaRenderOp, m_AlphaMaterial, view);
         }
 
         if(m_AddRenderOp.vertexData->vertexCount != 0)
         {
-            m_SceneManager->_setPass(m_AddMaterial->getTechnique(0)->getPass(0), true, false);
-            m_RenderSystem->_render(m_AddRenderOp);
+            QSim::ManualRenderable::renderInClipSpace(m_SceneManager, m_AddRenderOp, m_AddMaterial, view);
         }
 
         if(m_SubtractRenderOp.vertexData->vertexCount != 0)
         {
-            m_SceneManager->_setPass(m_SubtractMaterial->getTechnique(0)->getPass(0), true, false);
-            m_RenderSystem->_render(m_SubtractRenderOp);
+            QSim::ManualRenderable::renderInClipSpace(m_SceneManager, m_SubtractRenderOp, m_SubtractMaterial, view);
         }
     }
 }
@@ -961,17 +960,17 @@ Background2D::DestroyVertexBuffers()
 {
     delete m_AlphaRenderOp.vertexData;
     m_AlphaRenderOp.vertexData = 0;
-    m_AlphaVertexBuffer.setNull();
+    m_AlphaVertexBuffer.reset();
     m_AlphaMaxVertexCount = 0;
 
     delete m_AddRenderOp.vertexData;
     m_AddRenderOp.vertexData = 0;
-    m_AddVertexBuffer.setNull();
+    m_AddVertexBuffer.reset();
     m_AddMaxVertexCount = 0;
 
     delete m_SubtractRenderOp.vertexData;
     m_SubtractRenderOp.vertexData = 0;
-    m_SubtractVertexBuffer.setNull();
+    m_SubtractVertexBuffer.reset();
     m_SubtractMaxVertexCount = 0;
 }
 
@@ -979,7 +978,7 @@ Background2D::DestroyVertexBuffers()
 void
 Background2D::load(const QSim::Background2DFilePtr& background)
 {
-    assert(!background.isNull());
+    assert(background);
     background->load();
     SetImage(background->getTextureName());
     m_virtual_screen_size = background->getClip();

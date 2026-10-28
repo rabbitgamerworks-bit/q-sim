@@ -8,7 +8,7 @@
 
 
 
-class GameFrameListener : public Ogre::FrameListener, public Ogre::WindowEventListener, public OIS::KeyListener, public OIS::MouseListener
+class GameFrameListener : public Ogre::FrameListener, public OgreBites::WindowEventListener, public OIS::KeyListener, public OIS::MouseListener
 {
 public:
                  GameFrameListener( Ogre::RenderWindow* win );

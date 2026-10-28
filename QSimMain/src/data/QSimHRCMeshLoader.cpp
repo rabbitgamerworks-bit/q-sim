@@ -85,14 +85,14 @@ namespace QSim
             rsd_base = path + *it;
             StringUtil::toLowerCase( rsd_base );
             rsd_file_name = rsd_base + EXT_RSD;
-            RSDFilePtr rsd_file = RSDFileManager::getSingleton().load( rsd_file_name, m_hrc_file.getGroup() ).staticCast<RSDFile>();
-            assert( !rsd_file.isNull() );
+            RSDFilePtr rsd_file = Ogre::static_pointer_cast<RSDFile>(RSDFileManager::getSingleton().load( rsd_file_name, m_hrc_file.getGroup() ));
+            assert( rsd_file );
 
             p_file_name = path + rsd_file->getPolygonName();
             StringUtil::toLowerCase( p_file_name );
             p_file_name = StringUtil::replaceAll( p_file_name, EXT_PLY, EXT_P );
-            PFilePtr p_file =  PFileManager::getSingleton().load( p_file_name, m_hrc_file.getGroup() ).staticCast<PFile>();
-            assert( !p_file.isNull() );
+            PFilePtr p_file =  Ogre::static_pointer_cast<PFile>(PFileManager::getSingleton().load( p_file_name, m_hrc_file.getGroup() ));
+            assert( p_file );
 
             p_file->addGroups( mesh, bone_name, rsd_file );
 

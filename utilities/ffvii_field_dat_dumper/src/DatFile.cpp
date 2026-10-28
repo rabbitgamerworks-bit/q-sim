@@ -3264,7 +3264,7 @@ DatFile::DumpBackground( const Ogre::String& export_path, const Field& field, Mi
 
     for( s32 y = 0; y < height; ++y )
     {
-        u32* data = static_cast< u32* >( pb.data ) + y * pb.rowPitch;
+        u32* data = reinterpret_cast< u32* >( pb.data ) + y * pb.rowPitch;
 
         for( s32 x = 0; x < width; ++x )
         {

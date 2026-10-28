@@ -1,3 +1,12 @@
 #pragma once
 
 #define QG_VERSION_NAME "@QSIM_VERSION@"
+
+// Default location of the OGRE media shipped with the OGRE SDK, holds the
+// RTShaderLib needed to generate shaders for the Vulkan render system.
+// Can be overridden at runtime with the QSIM_OGRE_MEDIA_DIR environment variable.
+#define QSIM_OGRE_MEDIA_DIR "@OGRE_MEDIA_DIR@"
+
+// Directory holding the OGRE plugins (RenderSystem_Vulkan, ...) of the OGRE
+// installation q-sim was built against.
+#define QSIM_OGRE_PLUGIN_DIR "@OGRE_PLUGIN_DIR@"

@@ -1,3 +1,6 @@
+#include "common/QSimNativeWindow.h"
+#include "common/QSimRTShaderSystem.h"
+#include <OgreWindowEventUtilities.h>
 #include "Main.h"
 
 #include <Ogre.h>
@@ -16,7 +19,7 @@ int state;
 
 
 
-class DisplayFrameListener : public Ogre::FrameListener, public Ogre::WindowEventListener, public OIS::KeyListener
+class DisplayFrameListener : public Ogre::FrameListener, public OgreBites::WindowEventListener, public OIS::KeyListener
 {
 public:
     DisplayFrameListener(Ogre::RenderWindow* win):
@@ -32,7 +35,7 @@ public:
         size_t windowHnd = 0;
         std::ostringstream windowHndStr;
 
-        win->getCustomAttribute("WINDOW", &windowHnd);
+        windowHnd = QSim::NativeWindow::getHandle(win);
         windowHndStr << windowHnd;
         pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
 
@@ -42,7 +45,7 @@ public:
         m_Keyboard->setEventCallback(this);
 
         //Register as a Window listener
-        Ogre::WindowEventUtilities::addWindowEventListener(m_Window, this);
+        QSim::NativeWindow::addWindowEventListener(m_Window, this);
     }
 
     virtual
@@ -53,7 +56,7 @@ public:
         OIS::InputManager::destroyInputSystem(m_InputManager);
 
         //Remove ourself as a Window listener
-        Ogre::WindowEventUtilities::removeWindowEventListener(m_Window, this);
+        QSim::NativeWindow::removeWindowEventListener(m_Window, this);
         windowClosed(m_Window);
     }
 
@@ -127,16 +130,13 @@ main( int argc, char *argv[] )
     Ogre::RenderWindow* window;
 
     root = new Ogre::Root( "", "" );
-#ifndef _DEBUG
-    root->loadPlugin( "RenderSystem_GL.dll" );
-#else
-    root->loadPlugin( "RenderSystem_GL_d.dll" );
-#endif
-    root->setRenderSystem( root->getAvailableRenderers()[ 0 ] );
+    QSim::RTShaderSystem::loadVulkanPlugins( *root );
+    QSim::RTShaderSystem::configureRenderSystem( *root, false );
     root->initialise( false );
     Ogre::NameValuePairList misc;
     misc[ "title" ] = "Xenogears SoundDumper";
-    window = root->createRenderWindow( "QSimWindow", 800, 600, false, &misc );
+    window = QSim::NativeWindow::createRenderWindow( *root, misc[ "title" ], 800, 600, false, &misc );
+    QSim::RTShaderSystem::initialise();
 
 
 
@@ -150,13 +150,15 @@ main( int argc, char *argv[] )
     DisplayFrameListener* frame_listener = new DisplayFrameListener( window );
     root->addFrameListener( frame_listener );
 
-    Ogre::SceneManager* scene_manager = root->createSceneManager( Ogre::ST_GENERIC, "Scene" );
+    Ogre::SceneManager* scene_manager = root->createSceneManager(Ogre::SMT_DEFAULT, "Scene" );
+    QSim::RTShaderSystem::registerSceneManager( scene_manager );
     scene_manager->setAmbientLight( Ogre::ColourValue( 1.0, 1.0, 1.0 ) );
 
     Ogre::Camera* camera = scene_manager->createCamera( "Camera" );
     camera->setNearClipDistance( 5 );
 
     Ogre::Viewport* viewport = window->addViewport( camera );
+    QSim::RTShaderSystem::registerViewport( viewport );
     viewport->setBackgroundColour( Ogre::ColourValue( 0, 0, 0 ) );
     camera->setAspectRatio( Ogre::Real( viewport->getActualWidth()) / Ogre::Real( viewport->getActualHeight() ) );
 
@@ -173,6 +175,10 @@ main( int argc, char *argv[] )
 
     delete SOUND_PARSER;
     delete SOUNDMAN;
+
+
+
+    QSim::RTShaderSystem::shutdown();
 
 
 

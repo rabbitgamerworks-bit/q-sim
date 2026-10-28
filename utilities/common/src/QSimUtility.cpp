@@ -14,6 +14,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.
 -----------------------------------------------------------------------------
 */
+#include "common/QSimRTShaderSystem.h"
 #include "QSimUtility.h"
 
 namespace QSim
@@ -49,22 +50,31 @@ namespace QSim
 
         Ogre::Root         *root( getRoot() );
 
-        m_scene_manager = root->createSceneManager( Ogre::ST_GENERIC, "Scene" );
+        m_scene_manager = root->createSceneManager(Ogre::SMT_DEFAULT, "Scene" );
+        m_scene_manager->addRenderQueueListener( getOverlaySystem() );
+        registerSceneManager( m_scene_manager );
         m_scene_manager->clearScene();
         m_scene_manager->setAmbientLight( Ogre::ColourValue( 0.5, 0.5, 0.5 ) );
         Ogre::Light* directionalLight = m_scene_manager->createLight("directionalLight");
         directionalLight->setType( Ogre::Light::LT_DIRECTIONAL );
         directionalLight->setDiffuseColour( Ogre::ColourValue( 0.5, 0.5, 0.5) );
         directionalLight->setSpecularColour( Ogre::ColourValue( 0.5, 0.5, 0.5) );
-        directionalLight->setDirection( Ogre::Vector3( 0, 0, -1 ) );
+        // Since Ogre 1.10 lights take their direction from their scene node
+        Ogre::SceneNode* light_node = m_scene_manager->getRootSceneNode()->createChildSceneNode();
+        light_node->attachObject(directionalLight);
+        light_node->setDirection(Ogre::Vector3( 0, 0, -1 ), Ogre::Node::TS_WORLD);
 
         m_camera = m_scene_manager->createCamera( "Camera" );
         m_camera->setNearClipDistance( 0.01f );
-        m_camera->setPosition( 0, 5, 10 );
-        m_camera->lookAt( 0, 0, 0 );
+        Ogre::SceneNode* camera_node = m_scene_manager->getRootSceneNode()->createChildSceneNode( "CameraNode" );
+        camera_node->setFixedYawAxis( true );
+        camera_node->attachObject( m_camera );
+        camera_node->setPosition( 0, 5, 10 );
+        camera_node->lookAt( Ogre::Vector3( 0, 0, 0 ), Ogre::Node::TS_WORLD );
 
         Ogre::RenderWindow *window( getRenderWindow() );
         m_viewport = window->addViewport( m_camera );
+        RTShaderSystem::registerViewport( m_viewport );
         m_viewport->setBackgroundColour( Ogre::ColourValue( 0.0f, 0.4f, 0.0f ) );
         m_camera->setAspectRatio( Ogre::Real( m_viewport->getActualWidth() ) / Ogre::Real( m_viewport->getActualHeight() ) );
 

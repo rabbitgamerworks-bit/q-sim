@@ -90,6 +90,6 @@ BcxFile::GetSkeleton( std::vector< s16 >& skeleton_length )
     u16 offset_to_bones = GetU16LE(offset_to_model_info + 0x1C);
     SkeletonFile file_s(this);
     Ogre::SkeletonPtr skeleton;
-    skeleton.setNull();
+    skeleton.reset();
     file_s.GetData( skeleton_length, offset_to_bones, number_of_bones, skeleton);
 }

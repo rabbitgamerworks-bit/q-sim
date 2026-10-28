@@ -126,7 +126,7 @@ FontFile::GetSurface(void)
 
     for (auto y = 0; y < ret->height; ++y)
     {
-        auto* data = static_cast<unsigned int*>(pb.data) + y * pb.rowPitch;
+        auto* data = reinterpret_cast<unsigned int*>(pb.data) + y * pb.rowPitch;
 
         for (auto x = 0; x < ret->width; ++x)
         {

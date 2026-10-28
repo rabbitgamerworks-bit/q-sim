@@ -95,6 +95,15 @@ namespace QSim
     }
 
     //---------------------------------------------------------------------
+    String
+    Serializer::readString( const Ogre::DataStreamPtr& stream, size_t numChars )
+    {
+        std::vector<char> buffer( numChars + 1, '\0' );
+        stream->read( buffer.data(), numChars );
+        return String( buffer.data() );
+    }
+
+    //---------------------------------------------------------------------
     void
     Serializer::read1ByteBool( Ogre::DataStreamPtr &stream, bool &pDest )
     {

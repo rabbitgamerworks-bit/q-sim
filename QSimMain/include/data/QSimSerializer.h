@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 #include <OgreAxisAlignedBox.h>
 #include <OgreColourValue.h>
+#include <OgreDataStream.h>
 #include <OgreSerializer.h>
 #include <OgreVector2.h>
 #include <OgreVector3.h>
@@ -53,6 +54,10 @@ namespace QSim
         void    readObject( Ogre::DataStreamPtr &stream, Pixel &pDest );
 
         void readChars(Ogre::DataStreamPtr& stream, char* pDest, size_t count);
+        using Ogre::Serializer::readString;
+        /// Reads a fixed size string, stops at the first null character.
+        /// (removed from Ogre::Serializer in Ogre 1.11)
+        static String readString( const Ogre::DataStreamPtr& stream, size_t numChars );
         void    read1ByteBool( Ogre::DataStreamPtr &stream, bool &pDest );
         void    read2ByteBool( Ogre::DataStreamPtr &stream, bool &pDest );
         void    readShort( Ogre::DataStreamPtr &stream, uint16 &pDest );

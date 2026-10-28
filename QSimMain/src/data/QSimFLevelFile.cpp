@@ -63,21 +63,21 @@ namespace QSim
     {
         if( m_background_texture_loader )
         {
-            assert( !m_background_texture.isNull() );
+            assert( m_background_texture );
             Ogre::TextureManager::getSingleton().remove( m_background_texture->getHandle() );
             delete m_background_texture_loader;
             m_background_texture_loader = nullptr;
         }
-        m_background_texture.setNull();
+        m_background_texture.reset();
 
         if( m_background_2d_loader )
         {
-            assert( !m_background_2d.isNull() );
+            assert( m_background_2d );
             Background2DFileManager::getSingleton().remove( m_background_2d->getHandle() );
             delete m_background_2d_loader;
             m_background_2d_loader = nullptr;
         }
-        m_background_2d.setNull();
+        m_background_2d.reset();
 
         unload();
     }
@@ -88,7 +88,7 @@ namespace QSim
     {
         FLevelFileSerializer serializer;
         Ogre::DataStreamPtr stream( openResource() );
-        if (stream.isNull())
+        if (!stream)
         {
             LOG_ERROR("Failed to open resource");
         }
@@ -106,7 +106,7 @@ namespace QSim
         if( m_background_2d_loader == nullptr )
         {
             m_background_2d_loader = new FLevelBackground2DLoader( *this );
-            m_background_2d = Background2DFileManager::getSingleton().createResource( background_2d_name, mGroup, true, m_background_2d_loader ).staticCast<Background2DFile>();
+            m_background_2d = Ogre::static_pointer_cast<Background2DFile>(Background2DFileManager::getSingleton().createResource( background_2d_name, mGroup, true, m_background_2d_loader ));
         }
     }
 
@@ -123,7 +123,7 @@ namespace QSim
             Ogre::LogManager::getSingleton().stream()
                 << "Loading Model: " << hrc_name;
             StringUtil::toLowerCase( hrc_name );
-            HRCFilePtr  hrc =  hrc_mgr.load( hrc_name, mGroup ).staticCast<HRCFile>();
+            HRCFilePtr  hrc =  Ogre::static_pointer_cast<HRCFile>(hrc_mgr.load( hrc_name, mGroup ));
             loadAnimations( hrc, it->animations );
             m_hrc_files.push_back( hrc );
             ++it;
@@ -143,7 +143,7 @@ namespace QSim
             StringUtil::splitBase( it->name, animation_name );
             StringUtil::toLowerCase( animation_name );
             String animation_filename( animation_name + FF7::EXT_A );
-            AFilePtr animation = a_mgr.load( animation_filename, model->getGroup() ).staticCast<AFile>();
+            AFilePtr animation = Ogre::static_pointer_cast<AFile>(a_mgr.load( animation_filename, model->getGroup() ));
             animation_name = FF7::NameLookup::animation( animation_name );
             Ogre::LogManager::getSingleton().stream()
                 << " Adding Animation: " << animation_name;
@@ -156,13 +156,13 @@ namespace QSim
     void
     FLevelFile::unloadImpl()
     {
-        m_background.setNull();
-        m_camera_matrix.setNull();
-        m_palette.setNull();
-        m_model_list.setNull();
-        m_walkmesh.setNull();
+        m_background.reset();
+        m_camera_matrix.reset();
+        m_palette.reset();
+        m_model_list.reset();
+        m_walkmesh.reset();
         m_hrc_files.clear();
-        m_triggers.setNull();
+        m_triggers.reset();
     }
 
     //--------------------------------------------------------------------------

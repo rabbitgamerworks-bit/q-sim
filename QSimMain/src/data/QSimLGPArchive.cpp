@@ -25,6 +25,8 @@ THE SOFTWARE.
 */
 #include "data/QSimLGPArchive.h"
 
+#include <sys/stat.h>
+
 //#include <OgreThreadDefines.h>
 
 #include "common/QSimStringUtil.h"
@@ -58,8 +60,7 @@ namespace QSim
     void
     LGPArchive::load( Ogre::DataStream* lgp )
     {
-        m_lgp_file.setNull();
-        m_lgp_file.bind( lgp );
+        m_lgp_file.reset( lgp );
         LGPArchiveSerializer lgp_archive_serializer;
         lgp_archive_serializer.importLGPArchive( m_lgp_file, this );
 
@@ -90,7 +91,7 @@ namespace QSim
         //OGRE_LOCK_AUTO_MUTEX
         m_files.clear();
         m_file_infos.clear();
-        m_lgp_file.setNull();
+        m_lgp_file.reset();
     }
 
     //-------------------------------------------------------------------------
@@ -99,7 +100,7 @@ namespace QSim
     {
         LOG_DEBUG( "file:" + filename + " readOnly: " + Ogre::StringConverter::toString(readOnly) );
         Ogre::MemoryDataStream* buffer( nullptr );
-        if( !m_lgp_file.isNull() )
+        if( m_lgp_file )
         {
             FileList::const_iterator it( m_files.begin() );
             FileList::const_iterator it_end( m_files.end() );
@@ -121,7 +122,7 @@ namespace QSim
 
     //-------------------------------------------------------------------------
     Ogre::DataStreamPtr
-    LGPArchive::create( const String& filename ) const
+    LGPArchive::create( const String& filename )
     {
         OGRE_EXCEPT(Ogre::Exception::ERR_NOT_IMPLEMENTED,
             "Modification of lgp archives is not supported",
@@ -130,7 +131,7 @@ namespace QSim
 
     //-------------------------------------------------------------------------
     void
-    LGPArchive::remove(const String& filename) const
+    LGPArchive::remove(const String& filename)
     {
         OGRE_EXCEPT(Ogre::Exception::ERR_NOT_IMPLEMENTED,
             "Modification of lgp archives is not supported",
@@ -139,7 +140,7 @@ namespace QSim
 
     //-------------------------------------------------------------------------
     Ogre::StringVectorPtr
-    LGPArchive::list( bool recursive, bool dirs )
+    LGPArchive::list( bool recursive, bool dirs ) const
     {
         //OGRE_LOCK_AUTO_MUTEX
         Ogre::StringVector* file_names( OGRE_NEW_T( Ogre::StringVector, Ogre::MEMCATEGORY_GENERAL)() );
@@ -150,20 +151,20 @@ namespace QSim
             file_names->push_back( it->file_name );
             ++it;
         }
-        return Ogre::StringVectorPtr( file_names, Ogre::SPFM_DELETE_T );
+        return Ogre::StringVectorPtr( file_names );
     }
 
     //-------------------------------------------------------------------------
     Ogre::FileInfoListPtr
-    LGPArchive::listFileInfo( bool recursive, bool dirs )
+    LGPArchive::listFileInfo( bool recursive, bool dirs ) const
     {
         //OGRE_LOCK_AUTO_MUTEX
-        return Ogre::FileInfoListPtr( OGRE_NEW_T( Ogre::FileInfoList, Ogre::MEMCATEGORY_GENERAL )( m_file_infos ), Ogre::SPFM_DELETE_T );
+        return Ogre::FileInfoListPtr( OGRE_NEW_T( Ogre::FileInfoList, Ogre::MEMCATEGORY_GENERAL )( m_file_infos ) );
     }
 
     //-------------------------------------------------------------------------
     Ogre::StringVectorPtr
-    LGPArchive::find( const String& pattern, bool recursive, bool dirs )
+    LGPArchive::find( const String& pattern, bool recursive, bool dirs ) const
     {
         LOG_DEBUG( pattern );
 
@@ -178,7 +179,7 @@ namespace QSim
             ++it;
         }
 
-        return Ogre::StringVectorPtr( file_names, Ogre::SPFM_DELETE_T );
+        return Ogre::StringVectorPtr( file_names );
     }
 
     //-------------------------------------------------------------------------
@@ -204,12 +205,12 @@ namespace QSim
             ++it;
         }
 
-        return Ogre::FileInfoListPtr( file_infos, Ogre::SPFM_DELETE_T );
+        return Ogre::FileInfoListPtr( file_infos );
     }
 
     //-------------------------------------------------------------------------
     bool
-    LGPArchive::exists( const String& filename )
+    LGPArchive::exists( const String& filename ) const
     {
         FileList::const_iterator it( m_files.begin() );
         FileList::const_iterator it_end( m_files.end() );
@@ -228,7 +229,7 @@ namespace QSim
 
     //-------------------------------------------------------------------------
     time_t
-    LGPArchive::getModifiedTime( const String& filename )
+    LGPArchive::getModifiedTime( const String& filename ) const
     {
         struct stat tagStat;
         bool ret = (stat(mName.c_str(), &tagStat) == 0);

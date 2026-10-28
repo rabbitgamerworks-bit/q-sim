@@ -64,7 +64,7 @@ namespace QSim
     Background2DFile::unloadImpl()
     {
         m_texture_name.clear();
-        m_range = 0;
+        m_range = Ogre::Vector4::ZERO;
         m_position = Ogre::Vector3::ZERO;
         m_orientation = Ogre::Quaternion::IDENTITY;
         m_fov = 0;

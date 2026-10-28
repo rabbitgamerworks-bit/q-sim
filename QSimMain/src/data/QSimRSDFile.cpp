@@ -70,7 +70,7 @@ namespace QSim
         {
             Ogre::String material_name( material_base_name + "/" + Ogre::StringConverter::toString( i ) );
             material = material_manager.getByName( material_name, mGroup );
-            if( material.isNull() )
+            if( !material )
             {
 #ifndef NDEBUG
                 Ogre::LogManager::getSingleton().stream()

@@ -28,9 +28,9 @@ THE SOFTWARE.
 
 #include <vector>
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
-#include <OgreImageCodec.h>
+#include <OgreImage.h>
 #include <OgrePlatform.h>
 
 #include "common/TypeDefine.h"
@@ -46,8 +46,8 @@ namespace QSim
         void read( Ogre::DataStreamPtr& input );
         void readHeader( Ogre::DataStreamPtr& input );
         void readPalleted( Ogre::DataStreamPtr& input );
-        Ogre::MemoryDataStream* getPixelData() const;
-        Ogre::ImageCodec::ImageData* getImageData() const;
+        /// Copies the decoded A8R8G8B8 pixels into the given image
+        void toImage( Ogre::Image& image ) const;
 
         typedef Ogre::int32 entry_t;
 

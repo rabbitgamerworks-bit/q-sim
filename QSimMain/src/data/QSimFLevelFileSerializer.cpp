@@ -118,7 +118,7 @@ namespace QSim
             readSectionData(stream, section, section_sizesVec[i]);
             readSection(section, pDest, i);
             section->close();
-            section.setNull();
+            section.reset();
         }
         readEnd(stream);
     }
@@ -239,9 +239,9 @@ namespace QSim
     void
     FLevelFileSerializer::readCameraMatrix( Ogre::DataStreamPtr &stream, FLevelFile *pDest )
     {
-        CameraMatrixFilePtr camera_matrix = createResource<CameraMatrixFileManager>( pDest, EXT_CAMERA_MATRIX ).staticCast<CameraMatrixFile>();
+        CameraMatrixFilePtr camera_matrix = Ogre::static_pointer_cast<CameraMatrixFile>(createResource<CameraMatrixFileManager>( pDest, EXT_CAMERA_MATRIX ));
         CameraMatrixFileSerializer ser;
-        ser.importCameraMatrixFile( stream, camera_matrix.getPointer() );
+        ser.importCameraMatrixFile( stream, camera_matrix.get() );
         pDest->setCameraMatrix( camera_matrix );
     }
 
@@ -249,9 +249,9 @@ namespace QSim
     void
     FLevelFileSerializer::readModelList( Ogre::DataStreamPtr &stream, FLevelFile *pDest )
     {
-        ModelListFilePtr model_list = createResource<ModelListFileManager>( pDest, EXT_MODEL_LIST ).staticCast<ModelListFile>();
+        ModelListFilePtr model_list = Ogre::static_pointer_cast<ModelListFile>(createResource<ModelListFileManager>( pDest, EXT_MODEL_LIST ));
         ModelListFileSerializer ser;
-        ser.importModelListFile( stream, model_list.getPointer() );
+        ser.importModelListFile( stream, model_list.get() );
         pDest->setModelList( model_list );
     }
 
@@ -259,9 +259,9 @@ namespace QSim
     void
     FLevelFileSerializer::readPalette( Ogre::DataStreamPtr &stream, FLevelFile *pDest )
     {
-        PaletteFilePtr palette = createResource<PaletteFileManager>( pDest, EXT_PALETTE ).staticCast<PaletteFile>();
+        PaletteFilePtr palette = Ogre::static_pointer_cast<PaletteFile>(createResource<PaletteFileManager>( pDest, EXT_PALETTE ));
         PaletteFileSerializer ser;
-        ser.importPaletteFile( stream, palette.getPointer() );
+        ser.importPaletteFile( stream, palette.get() );
         pDest->setPalette( palette );
     }
 
@@ -269,9 +269,9 @@ namespace QSim
     void
     FLevelFileSerializer::readWalkmesh( Ogre::DataStreamPtr &stream, FLevelFile *pDest )
     {
-        WalkmeshFilePtr walkmesh = createResource<WalkmeshFileManager>( pDest, EXT_WALKMESH ).staticCast<WalkmeshFile>();
+        WalkmeshFilePtr walkmesh = Ogre::static_pointer_cast<WalkmeshFile>(createResource<WalkmeshFileManager>( pDest, EXT_WALKMESH ));
         WalkmeshFileSerializer ser;
-        ser.importWalkmeshFile( stream, walkmesh.getPointer() );
+        ser.importWalkmeshFile( stream, walkmesh.get() );
 
         WalkmeshFile::TriangleList& triangles( walkmesh->getTriangles() );
         WalkmeshFile::TriangleList::iterator it( triangles.begin() );
@@ -292,18 +292,18 @@ namespace QSim
     void
     FLevelFileSerializer::readBackground( Ogre::DataStreamPtr &stream, FLevelFile *pDest )
     {
-        BackgroundFilePtr background = createResource<BackgroundFileManager>( pDest, EXT_BACKGROUND ).staticCast<BackgroundFile>();
+        BackgroundFilePtr background = Ogre::static_pointer_cast<BackgroundFile>(createResource<BackgroundFileManager>( pDest, EXT_BACKGROUND ));
         BackgroundFileSerializer ser;
-        ser.importBackgroundFile( stream, background.getPointer() );
+        ser.importBackgroundFile( stream, background.get() );
         pDest->setBackground( background );
     }
 
     void FLevelFileSerializer::readTriggers(Ogre::DataStreamPtr &stream, FLevelFile* pDest)
     {
-        TriggersFilePtr triggers = createResource<TriggersFileManager>(pDest, EXT_TRIGGERS).staticCast<TriggersFile>();
+        TriggersFilePtr triggers = Ogre::static_pointer_cast<TriggersFile>(createResource<TriggersFileManager>(pDest, EXT_TRIGGERS));
 
         TriggerFileSerializer ser;
-        ser.importTriggerFile(stream, triggers.getPointer());
+        ser.importTriggerFile(stream, triggers.get());
 
         pDest->setTriggers(triggers);
     }

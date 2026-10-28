@@ -67,7 +67,7 @@ namespace QSim
     void
     HRCFileManager::parseScript( Ogre::DataStreamPtr &stream, const String &groupName )
     {
-        HRCFilePtr  hrc = createResource( stream->getName(), groupName ).staticCast<HRCFile>();
+        HRCFilePtr  hrc = Ogre::static_pointer_cast<HRCFile>(createResource( stream->getName(), groupName ));
         hrc->load();
     }
 

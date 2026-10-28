@@ -59,7 +59,6 @@ BOOST_AUTO_TEST_CASE( read_file )
     protected:
         virtual void loadImpl() {}
         virtual void unloadImpl() {}
-        virtual HardwarePixelBufferSharedPtr getBuffer( size_t, size_t ){ return HardwarePixelBufferSharedPtr( NULL ); }
         virtual void createInternalResourcesImpl(){}
         virtual void freeInternalResourcesImpl(){}
     };
@@ -118,11 +117,11 @@ BOOST_AUTO_TEST_CASE( read_file )
     QSim::PaletteFilePtr          palette      ( file.getPalette() );
     QSim::WalkmeshFilePtr         walkmesh     ( file.getWalkmesh() );
 
-    BOOST_REQUIRE( !background.isNull() );
-    BOOST_REQUIRE( !camera_matrix.isNull() );
-    BOOST_REQUIRE( !model_list.isNull() );
-    BOOST_REQUIRE( !palette.isNull() );
-    BOOST_REQUIRE( !walkmesh.isNull() );
+    BOOST_REQUIRE( background );
+    BOOST_REQUIRE( camera_matrix );
+    BOOST_REQUIRE( model_list );
+    BOOST_REQUIRE( palette );
+    BOOST_REQUIRE( walkmesh );
     BOOST_CHECK_EQUAL( "reference.background", background->getName() );
     BOOST_CHECK_EQUAL( "reference.cam_matrix", camera_matrix->getName() );
     BOOST_CHECK_EQUAL( "reference.model_list", model_list->getName() );
@@ -144,16 +143,16 @@ BOOST_AUTO_TEST_CASE( read_file )
     //image->save( file.getName() + ".png" );
     delete image;
 
-    QSim::FLevelFilePtr lzs_file = fmgr.load( "reference_compressed.flevel", "General" ).staticCast<QSim::FLevelFile>();
-    BOOST_CHECK( !lzs_file->getPalette().isNull() );
-    BOOST_CHECK( !lzs_file->getBackground().isNull() );
+    QSim::FLevelFilePtr lzs_file = Ogre::static_pointer_cast<QSim::FLevelFile>(fmgr.load( "reference_compressed.flevel", "General" ));
+    BOOST_CHECK( lzs_file->getPalette() );
+    BOOST_CHECK( lzs_file->getBackground() );
 
     image = lzs_file->getBackground()->createImage( lzs_file->getPalette() );
     // TODO: FIX ME ON OSX
     //image->save( lzs_file->getName() + ".png" );
     delete image;
 
-    lzs_file.setNull();
+    lzs_file.reset();
     logMgr.destroyLog( "Default Log" );
     stream->close();
 }

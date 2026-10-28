@@ -71,8 +71,8 @@ namespace QSim
             m_mesh_loader = nullptr;
         }
 
-        m_skeleton.setNull();
-        m_mesh.setNull();
+        m_skeleton.reset();
+        m_mesh.reset();
         unload();
     }
 
@@ -88,7 +88,7 @@ namespace QSim
         const String skeleton_file_name( getSkeletonFileName() );
         Ogre::SkeletonManager &skeleton_manager( Ogre::SkeletonManager::getSingleton() );
         m_skeleton = skeleton_manager.getByName( skeleton_file_name, mGroup );
-        if( m_skeleton.isNull() )
+        if( !m_skeleton )
         {
             assert( m_skeleton_loader == nullptr );
             m_skeleton_loader = new HRCSkeletonLoader( *this );
@@ -100,7 +100,7 @@ namespace QSim
                 << "HRC::loadImpl(): mesh_file_name: " << mesh_file_name;
         Ogre::MeshManager &mesh_manager( Ogre::MeshManager::getSingleton() );
         m_mesh = mesh_manager.getByName( mesh_file_name, mGroup );
-        if( m_mesh.isNull() )
+        if( !m_mesh )
         {
             assert( m_mesh_loader == nullptr );
             m_mesh_loader = new HRCMeshLoader( *this );

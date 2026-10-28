@@ -209,7 +209,7 @@ TdbFile::CreateTexture( const Ogre::PixelBox& pb, const int face_id, const int s
 
         for( u32 y = 0; y < 32; ++y )
         {
-            u32* data = static_cast< u32* >( pb.data ) + ( y + start_y_new ) * pb.rowPitch;
+            u32* data = reinterpret_cast< u32* >( pb.data ) + ( y + start_y_new ) * pb.rowPitch;
 
             for( u32 x = 0; x < 16; ++x )
             {

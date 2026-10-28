@@ -1,9 +1,13 @@
 #ifndef __OGRE_BASE_H__
 #define __OGRE_BASE_H__
 
+#include "common/QSimNativeWindow.h"
+#include <OgreWindowEventUtilities.h>
 #include <Ogre.h>
 #include <OgreTextAreaOverlayElement.h>
 #include <OgreOverlayManager.h>
+#include <OgreOverlay.h>
+#include <OgreOverlaySystem.h>
 #include <OIS.h>
 
 #include "common/FileSystem.h"
@@ -15,13 +19,14 @@ extern Ogre::Root*                     root;
 extern Ogre::RenderWindow*             window;
 extern std::vector< Ogre::Entity* >    entitys;
 extern Ogre::Camera*                   camera;
+extern Ogre::OverlaySystem*            overlay_system;
 
 class DisplayFrameListener;
 
 extern DisplayFrameListener* frame_listener;
 
 
-class DisplayFrameListener : public Ogre::FrameListener, public Ogre::WindowEventListener, public OIS::KeyListener, public OIS::MouseListener
+class DisplayFrameListener : public Ogre::FrameListener, public OgreBites::WindowEventListener, public OIS::KeyListener, public OIS::MouseListener
 {
 public:
     // Constructor takes a RenderWindow because it uses that to determine input context
@@ -41,7 +46,7 @@ public:
         size_t windowHnd = 0;
         std::ostringstream windowHndStr;
 
-        win->getCustomAttribute( "WINDOW", &windowHnd );
+        windowHnd = QSim::NativeWindow::getHandle(win);
         windowHndStr << windowHnd;
         pl.insert( std::make_pair( std::string( "WINDOW" ), windowHndStr.str() ) );
 
@@ -54,7 +59,7 @@ public:
         m_Mouse->setEventCallback( this );
 
         //Register as a Window listener
-        Ogre::WindowEventUtilities::addWindowEventListener( m_Window, this );
+        QSim::NativeWindow::addWindowEventListener( m_Window, this );
 
 
         // debug info
@@ -79,7 +84,7 @@ public:
         OIS::InputManager::destroyInputSystem( m_InputManager );
 
         //Remove ourself as a Window listener
-        Ogre::WindowEventUtilities::removeWindowEventListener( m_Window, this );
+        QSim::NativeWindow::removeWindowEventListener( m_Window, this );
         windowClosed( m_Window );
     }
 
@@ -93,6 +98,9 @@ public:
     bool
     frameStarted( const Ogre::FrameEvent& evt )
     {
+        // Root::startRendering no longer pumps window messages since Ogre 1.10
+        QSim::NativeWindow::messagePump();
+
         if( m_Exit == true )
         {
             return false;
@@ -133,28 +141,28 @@ public:
         if( m_Keyboard->isKeyDown( OIS::KC_A ) )
         {
             assert( m_camera );
-            m_camera->moveRelative( Ogre::Vector3( -0.005f, 0.0f, 0.0f ) );
+            m_camera->getParentSceneNode()->translate( Ogre::Vector3( -0.005f, 0.0f, 0.0f ) , Ogre::Node::TS_LOCAL);
         }
         if( m_Keyboard->isKeyDown( OIS::KC_D ) )
         {
             assert( m_camera );
-            m_camera->moveRelative( Ogre::Vector3( 0.005f, 0.0f, 0.0f ) );
+            m_camera->getParentSceneNode()->translate( Ogre::Vector3( 0.005f, 0.0f, 0.0f ) , Ogre::Node::TS_LOCAL);
         }
         if( m_Keyboard->isKeyDown( OIS::KC_W ) )
         {
             assert( m_camera );
-            m_camera->moveRelative( Ogre::Vector3( 0.0f, 0.0f, -0.005f ) );
+            m_camera->getParentSceneNode()->translate( Ogre::Vector3( 0.0f, 0.0f, -0.005f ) , Ogre::Node::TS_LOCAL);
         }
         if( m_Keyboard->isKeyDown( OIS::KC_S ) )
         {
             assert( m_camera );
-            m_camera->moveRelative( Ogre::Vector3( 0.0f, 0.0f,  0.005f ) );
+            m_camera->getParentSceneNode()->translate( Ogre::Vector3( 0.0f, 0.0f,  0.005f ) , Ogre::Node::TS_LOCAL);
         }
         if( m_MouseRotate == true )
         {
             assert( m_camera );
-            m_camera->yaw( Ogre::Degree( -m_MouseMoveX * 0.13f ) );
-            m_camera->pitch( Ogre::Degree( -m_MouseMoveY * 0.13f ) );
+            m_camera->getParentSceneNode()->yaw( Ogre::Degree( -m_MouseMoveX * 0.13f ), Ogre::Node::TS_WORLD );
+            m_camera->getParentSceneNode()->pitch( Ogre::Degree( -m_MouseMoveY * 0.13f ) );
             m_MouseMoveX = 0;
             m_MouseMoveY = 0;
         }

@@ -145,7 +145,7 @@ namespace QSim
     Ogre::Image*
     BackgroundFile::createImage( const PaletteFilePtr &palette )
     {
-        assert( !palette.isNull() );
+        assert( palette );
         SpritePtrList sprites;
         addAllSprites( sprites );
 

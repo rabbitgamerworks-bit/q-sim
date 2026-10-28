@@ -29,6 +29,7 @@ public:
     const Ogre::Vector3 ProjectPointToScreen( const Ogre::Vector3& point );
 
     Ogre::Camera*   GetCurrentCamera();
+    Ogre::SceneNode* GetCurrentCameraNode();
     Ogre::Viewport* getViewport();
 
     void EnableWireFrame(bool);
@@ -38,6 +39,7 @@ private:
 
 private:
     Ogre::Camera   *m_Camera;
+    Ogre::SceneNode *m_CameraNode = nullptr;
     Ogre::Viewport *m_Viewport;
 
     // camera free related

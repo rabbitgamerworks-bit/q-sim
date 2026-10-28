@@ -145,30 +145,18 @@ namespace QSim
     }
 
     //---------------------------------------------------------------------
-    MemoryDataStream* TexFile::getPixelData() const
+    void TexFile::toImage( Ogre::Image& image ) const
     {
+        const ImageData &data( m_header.image_data );
+        image.create( Ogre::PF_A8R8G8B8, data.width, data.height );
         size_t data_size( m_image_data.size()
           * sizeof( t_ImageData::value_type )
         );
-        MemoryDataStream* data( OGRE_NEW MemoryDataStream( data_size ) );
-        memcpy( data->getPtr(), &m_image_data[0], data_size );
-        return data;
-    }
-
-    //---------------------------------------------------------------------
-    ImageCodec::ImageData* TexFile::getImageData() const
-    {
-		ImageCodec::ImageData *img_data = OGRE_NEW ImageCodec::ImageData();
-		const ImageData &data( m_header.image_data );
-
-		img_data->width  = data.width;
-		img_data->height = data.height;
-		img_data->size = m_image_data.size() * sizeof( t_ImageData::value_type );
-		img_data->num_mipmaps = 0;
-		img_data->flags = 0;
-		img_data->depth = 1;
-		img_data->format = Ogre::PF_A8R8G8B8;
-        return img_data;
+        data_size = std::min( data_size, image.getSize() );
+        if( data_size )
+        {
+            memcpy( image.getData(), m_image_data.data(), data_size );
+        }
     }
 
     //---------------------------------------------------------------------

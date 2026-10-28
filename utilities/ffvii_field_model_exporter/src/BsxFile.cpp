@@ -166,7 +166,7 @@ BsxFile::GetModel( Ogre::Entity* entity, const s8 character_id, const Unit& unit
                 u32 offset_to_bones = offset_to_field_model_description + GetU16LE( offset_to_field_model_description + 0x4 );
                 SkeletonFile file_s( this );
                 Ogre::SkeletonPtr null_skeleton;
-                null_skeleton.setNull();
+                null_skeleton.reset();
                 file_s.GetData( skeleton_length, offset_to_bones, number_of_bones, null_skeleton );
             }
         }
@@ -182,7 +182,7 @@ BsxFile::GetModel( Ogre::Entity* entity, const s8 character_id, const Unit& unit
 
 
     Ogre::SkeletonSerializer skeleton_serializer;
-    skeleton_serializer.exportSkeleton( skeleton.getPointer(), "exported/models/ffvii/field/units/" + unit.name + ".skeleton" );
+    skeleton_serializer.exportSkeleton( skeleton.get(), "exported/models/ffvii/field/units/" + unit.name + ".skeleton" );
 
     if( entity == NULL )
     {
@@ -194,7 +194,7 @@ BsxFile::GetModel( Ogre::Entity* entity, const s8 character_id, const Unit& unit
         mesh->setSkeletonName( "models/ffvii/field/units/" + unit.name + ".skeleton" );
 
         Ogre::MeshSerializer ser;
-        ser.exportMesh( mesh.getPointer(), "exported/models/ffvii/field/units/" + unit.name + ".mesh" );
+        ser.exportMesh( mesh.get(), "exported/models/ffvii/field/units/" + unit.name + ".mesh" );
 
 
 

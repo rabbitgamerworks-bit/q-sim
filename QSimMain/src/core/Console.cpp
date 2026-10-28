@@ -33,8 +33,8 @@ Console::Console():
     m_AutoCompletitionLine(0)
 {
 
-    Ogre::FontPtr font = Ogre::FontManager::getSingleton().getByName("CourierNew");
-    if(font.isNull() == false)
+    Ogre::FontPtr font = Ogre::FontManager::getSingleton().getByName("CourierNew", Ogre::RGN_AUTODETECT);
+    if(font)
     {
         m_LetterWidth = static_cast<int>(font->getGlyphAspectRatio('_') * 16);
     }

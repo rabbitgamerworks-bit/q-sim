@@ -3,6 +3,10 @@ set(HEADER_FILES
   include/modules/worldmap/WorldMapModule.h
 
   include/common/QSimManualObject.h
+  include/common/QSimManualRenderable.h
+  include/common/QSimNativeWindow.h
+  include/common/QSimLegacyScripts.h
+  include/common/QSimRTShaderSystem.h
   include/common/QSimResource.h
   include/common/QSimStringUtil.h
   include/common/TypeDefine.h
@@ -210,6 +214,9 @@ set(SOURCE_FILES
   src/modules/worldmap/WorldMapModule.cpp
 
   src/common/QSimManualObject.cpp
+  src/common/QSimManualRenderable.cpp
+  src/common/QSimNativeWindow.cpp
+  src/common/QSimLegacyScripts.cpp
   src/common/QSimResource.cpp
   src/common/QSimStringUtil.cpp
   src/common/TypeDefine.cpp
@@ -343,23 +350,26 @@ add_library(QSimMain STATIC
   ${HEADER_FILES}
   ${SOURCE_FILES}
 )
-
-# Coverage uses more memory, combined with PCH can cause OOM/ICE
-#if ($ENV{COVERAGE}!=1)
-cotire(QSimMain)
-#endif()
 SET_PROPERTY(TARGET QSimMain PROPERTY FOLDER "q-sim")
 
 add_library(q-sim-data STATIC
  ${HEADER_FILES_DATA}
  ${SOURCE_FILES_DATA}
  )
-add_dependencies(q-sim-data configure_qsim_version)
-# Coverage uses more memory, combined with PCH can cause OOM/ICE
-if ($ENV{COVERAGE}!=1)
-cotire(q-sim-data)
-endif()
 SET_PROPERTY(TARGET q-sim-data PROPERTY FOLDER "q-sim")
+
+# Precompiled headers (replaces the archived cotire module)
+if(QSim_USE_PCH)
+  set(QSIM_PCH_HEADERS
+    <Ogre.h>
+    <OgreOverlaySystem.h>
+    <memory>
+    <string>
+    <vector>
+  )
+  target_precompile_headers(QSimMain PRIVATE ${QSIM_PCH_HEADERS})
+  target_precompile_headers(q-sim-data REUSE_FROM QSimMain)
+endif()
 
 
 add_executable(q-sim
@@ -370,7 +380,7 @@ set(CPACK_PACKAGE_EXECUTABLES q-sim "q-sim")
 set(CPACK_WIX_PROGRAM_MENU_FOLDER "QSim")
 
 if (APPLE)
-target_link_libraries(q-sim "-framework CoreFoundation -framework Cocoa -framework IOKit")
+target_link_libraries(q-sim PRIVATE "-framework CoreFoundation -framework Cocoa -framework IOKit")
 endif()
 
 if( WIN32 AND NOT (CMAKE_BUILD_TYPE MATCHES "Debug") )
@@ -380,23 +390,30 @@ if( WIN32 AND NOT (CMAKE_BUILD_TYPE MATCHES "Debug") )
     endif()
 endif()
 
-target_link_libraries(QSimMain 
+target_link_libraries(QSimMain PUBLIC
     ${QSim_LIBRARIES}
+    OIS::OIS
     LuaBind
 	liblua
     TinyXml
     FinalFantasy7
 )
 
-target_link_libraries(q-sim 
+# QSim::NativeWindow creates the X11 windows the Vulkan render system draws into
+if(UNIX AND NOT APPLE)
+    find_package(X11 REQUIRED)
+    target_link_libraries(QSimMain PUBLIC X11::X11)
+endif()
+
+target_link_libraries(q-sim PRIVATE
 	QSimMain
-	${Boost_LIBRARIES}
     q-sim-data
 )
 
-target_link_libraries(q-sim-data
+target_link_libraries(q-sim-data PUBLIC
     QSimMain
 )
+
 
 if(WIN32 OR APPLE)
   install(TARGETS q-sim DESTINATION .)

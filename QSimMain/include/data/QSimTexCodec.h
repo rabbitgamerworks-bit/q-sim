@@ -40,16 +40,13 @@ namespace QSim
         virtual ~TexCodec();
 
         /// @copydoc Ogre::ImageCodec::getType
-        virtual Ogre::String getType() const;
-
-        virtual Ogre::DataStreamPtr encode(Ogre::MemoryDataStreamPtr& input, CodecDataPtr& pData) const override final;
-        virtual void encodeToFile(Ogre::MemoryDataStreamPtr& input, const Ogre::String& outFileName, CodecDataPtr& pData) const override final;
+        Ogre::String getType() const override;
 
         /// @copydoc Ogre::Codec::decode
-        Ogre::Codec::DecodeResult decode( Ogre::DataStreamPtr& input ) const;
+        void decode( const Ogre::DataStreamPtr& input, const Ogre::Any& output ) const override;
 
         /// @copydoc Ogre::Codec::magicNumberToFileExt
-        virtual Ogre::String magicNumberToFileExt(const char *magicNumberPtr, size_t maxbytes) const;
+        Ogre::String magicNumberToFileExt(const char *magicNumberPtr, size_t maxbytes) const override;
 
         static Ogre::String ms_type_name;
 

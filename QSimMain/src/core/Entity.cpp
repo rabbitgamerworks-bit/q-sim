@@ -3,6 +3,8 @@
 #include "core/ConfigVar.h"
 #include "core/DebugDraw.h"
 #include "core/Entity.h"
+
+#include <OgreMaterialManager.h>
 #include "core/Logger.h"
 
 
@@ -67,18 +69,18 @@ Entity::Entity(const Ogre::String& name, Ogre::SceneNode* node):
     m_ModelNode = m_model_root_node->createChildSceneNode();
 
     m_Direction = new EntityDirection();
-    m_Direction->setMaterial("entity/direction");
+    m_Direction->setMaterial(Ogre::MaterialManager::getSingleton().getByName("entity/direction", Ogre::RGN_AUTODETECT));
     m_DirectionNode = m_SceneNode->createChildSceneNode();
     m_DirectionNode->attachObject(m_Direction);
 
     m_SolidCollision = new EntityCollision();
-    m_SolidCollision->setMaterial("entity/solid_collision");
+    m_SolidCollision->setMaterial(Ogre::MaterialManager::getSingleton().getByName("entity/solid_collision", Ogre::RGN_AUTODETECT));
     m_SolidCollisionNode = m_SceneNode->createChildSceneNode();
     m_SolidCollisionNode->setScale(m_SolidRadius, m_SolidRadius, m_Height);
     m_SolidCollisionNode->attachObject(m_SolidCollision);
 
     m_TalkCollision = new EntityCollision();
-    m_TalkCollision->setMaterial("entity/talk_collision");
+    m_TalkCollision->setMaterial(Ogre::MaterialManager::getSingleton().getByName("entity/talk_collision", Ogre::RGN_AUTODETECT));
     m_TalkCollisionNode = m_SceneNode->createChildSceneNode();
     m_TalkCollisionNode->setScale(m_TalkRadius, m_TalkRadius, m_Height);
     m_TalkCollisionNode->attachObject(m_TalkCollision);

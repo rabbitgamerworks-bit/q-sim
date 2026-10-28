@@ -37,11 +37,17 @@ namespace QSim
         bool                initOgre( bool hideWindow = false );
         Ogre::Root*         getRoot( void );
         Ogre::RenderWindow* getRenderWindow( void );
+        Ogre::OverlaySystem* getOverlaySystem( void ) { return m_overlay_system.get(); }
         const String&       getResourcesFilename( void );
         Ogre::ResourceGroupManager* ResMgr() { return mResMgr; }
+
+        /// Lets the RT Shader System generate shaders for this scene manager
+        static void         registerSceneManager( Ogre::SceneManager* scene_manager );
     protected:
         String  getWindowTitle( void ) const;
         bool    processCommandLine( int argc, char *argv[] );
+        bool    configureRenderSystem( void );
+        void    initShaderGenerator( void );
         void    registerArchiveFactories( void );
         void    loadResourcesConfig( void );
         void    initComponents( void );
@@ -64,6 +70,8 @@ namespace QSim
         static const char*      CLI_PLUGINS_FILE_DESCRIPTION;
         static const char*      CLI_RESOURCES_FILE;
         static const char*      CLI_RESOURCES_FILE_DESCRIPTION;
+        static const char*      CLI_CONFIG_DIALOG;
+        static const char*      CLI_CONFIG_DIALOG_DESCRIPTION;
 
         int     m_argc = 0;
         char  **m_argv = nullptr;
@@ -73,6 +81,7 @@ namespace QSim
         String  m_resources_filename;
 
         bool m_initialized = false;
+        bool m_show_config_dialog = false;
         std::unique_ptr<Ogre::Root> m_root;
         std::unique_ptr<Ogre::OverlaySystem> m_overlay_system;
         Ogre::RenderWindow* m_render_window = nullptr; // Not owned

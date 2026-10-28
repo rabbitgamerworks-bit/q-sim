@@ -63,7 +63,7 @@ RamEffectFile::GetModel(const EffectInfo info)
     mesh->_setBoundingSphereRadius(999);
 
     Ogre::MeshSerializer ser;
-    ser.exportMesh(mesh.getPointer(), "exported/models/ffvii/battle/effects/" + info.data.name + ".mesh");
+    ser.exportMesh(mesh.get(), "exported/models/ffvii/battle/effects/" + info.data.name + ".mesh");
 
 
 

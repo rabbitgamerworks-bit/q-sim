@@ -137,8 +137,8 @@ BOOST_AUTO_TEST_CASE( read_file )
     lzs_stream->flipEndian( flip );
     BOOST_CHECK_EQUAL( 0x78563412, flip );
 
-    lzs_stream.setNull();
-    file_stream.setNull();
+    lzs_stream.reset();
+    file_stream.reset();
     ofs.close();
 
     std::ifstream actual( out_file_name );

@@ -3,6 +3,8 @@ PluginFolder=/usr/lib/q-sim/plugins/
 #PluginFolder=~/.q-sim/plugins
 
 # Define plugins
-    Plugin=RenderSystem_GL
+    Plugin=RenderSystem_Vulkan
+    Plugin=Plugin_GLSLangProgramManager
+    Plugin=Codec_STBI
 #    Plugin=Plugin_Data
  

@@ -125,7 +125,7 @@ FontFile::GetSurface(void)
 
     for (int y = 0; y < ret->height; ++y)
     {
-        Uint32* data = static_cast<Uint32*>(pb.data) + y * pb.rowPitch;
+        Uint32* data = reinterpret_cast< Uint32* >( pb.data ) + y * pb.rowPitch;
 
         for (int x = 0; x < ret->width; ++x)
         {

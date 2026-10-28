@@ -122,14 +122,14 @@ namespace QSim
     void
     ManualObject::resetBuffer( BufferSharedPtr &buffer ) const
     {
-        if( buffer.isNull() ) return;
+        if( !buffer ) return;
 
         if( buffer->isLocked() )
         {
             buffer->unlock();
         }
 
-        buffer.setNull();
+        buffer.reset();
     }
 
     //-------------------------------------------------------------------------

@@ -9,6 +9,11 @@
 #include <OgreMeshManager.h>
 #include <OgreRenderWindow.h>
 #include <OgreHardwarePixelBuffer.h>
+#include <OgreMaterialManager.h>
+#include <OgreMaterialSerializer.h>
+#include <OgreTechnique.h>
+#include <OgreTextureManager.h>
+#include <fstream>
 
 #include "QSimGameState.h"
 #include "data/QSimAFileManager.h"
@@ -122,11 +127,11 @@ static void exportMesh(std::string outdir, const Ogre::MeshPtr &mesh)
 
     Ogre::SkeletonPtr           skeleton(mesh->getSkeleton());
     Ogre::SkeletonSerializer    sk_ser;
-    sk_ser.exportSkeleton(skeleton.getPointer(), outdir + baseMeshName + ".skeleton");
+    sk_ser.exportSkeleton(skeleton.get(), outdir + baseMeshName + ".skeleton");
 
     mesh->setSkeletonName(FieldModelDir() + "/" + baseMeshName + ".skeleton");
 
-    mesh_ser.exportMesh(mesh.getPointer(), outdir + mesh->getName());
+    mesh_ser.exportMesh(mesh.get(), outdir + mesh->getName());
 
 
     Ogre::Mesh::SubMeshIterator it(mesh->getSubMeshIterator());
@@ -137,7 +142,7 @@ static void exportMesh(std::string outdir, const Ogre::MeshPtr &mesh)
     {
         Ogre::SubMesh *sub_mesh(it.getNext());
         Ogre::MaterialPtr mat(Ogre::MaterialManager::getSingleton().getByName(sub_mesh->getMaterialName()));
-        if (!mat.isNull())
+        if (mat)
         {
             for (size_t techNum = 0; techNum < mat->getNumTechniques(); techNum++)
             {
@@ -896,7 +901,7 @@ void FF7DataInstaller::InitCollectSpawnAndScaleFactors()
     mFLevelFileList = mApp.ResMgr()->listResourceNames("FFVIIFields", "*");
 
     // Load the map list field
-    QSim::MapListFilePtr mapList = QSim::MapListFileManager::getSingleton().load("maplist", "FFVIIFields").staticCast<QSim::MapListFile>();
+    QSim::MapListFilePtr mapList = Ogre::static_pointer_cast<QSim::MapListFile>(QSim::MapListFileManager::getSingleton().load("maplist", "FFVIIFields"));
     mMapList = mapList->GetMapList();
 
     mIteratorCounter = 0;
@@ -918,7 +923,7 @@ void FF7DataInstaller::CollectionFieldSpawnAndScaleFactors()
 
             if (mConversionStep == 1)
             {
-                mField = QSim::LZSFLevelFileManager::getSingleton().load(resourceName, "FFVIIFields").staticCast<QSim::FLevelFile>();
+                mField = Ogre::static_pointer_cast<QSim::FLevelFile>(QSim::LZSFLevelFileManager::getSingleton().load(resourceName, "FFVIIFields"));
                 mfnWriteOutputLine("Load field " + resourceName);
                 return;
             }
@@ -946,7 +951,7 @@ void FF7DataInstaller::CollectionFieldSpawnAndScaleFactors()
     }
     else
     {
-        mField.setNull();
+        mField.reset();
         mIteratorCounter = 0;
         mState = eConvertFieldsIteration;
         mFieldTextWriter.Begin(mOutputDir + "/texts/english/dialogs_mission1.xml");
@@ -973,7 +978,7 @@ void FF7DataInstaller::ConvertFieldsIteration()
                 std::cout << "Converting: " << resourceName << std::endl;
                 CreateDir(FieldMapDir() + "/" + resourceName);
 
-                QSim::FLevelFilePtr field = QSim::LZSFLevelFileManager::getSingleton().load(resourceName, "FFVIIFields").staticCast<QSim::FLevelFile>();
+                QSim::FLevelFilePtr field = Ogre::static_pointer_cast<QSim::FLevelFile>(QSim::LZSFLevelFileManager::getSingleton().load(resourceName, "FFVIIFields"));
                 FF7PcFieldToQSimField(mFieldTextWriter, field, mOutputDir, mMapList, mCollectedSpawnPoints, mCollectedScaleFactors, mModelsAndAnimationsUsedByConvertedFields, mConvertedMapList, mfnWriteOutputLine);
             }
             else
@@ -1078,7 +1083,7 @@ void FF7DataInstaller::ConvertFieldModelsIteration()
                 for (auto& anim : mModelAnimationMapIterator->second)
                 {
                     QSim::AFileManager       &afl_mgr(QSim::AFileManager::getSingleton());
-                    QSim::AFilePtr  a = afl_mgr.load(anim, "FFVII").staticCast<QSim::AFile>();
+                    QSim::AFilePtr  a = Ogre::static_pointer_cast<QSim::AFile>(afl_mgr.load(anim, "FFVII"));
 
                     // Convert the FF7 name to a more readable name set in the meta data
                     Ogre::String baseName;

@@ -1,9 +1,11 @@
 #pragma once
 
+#include <functional>
 #include <string>
 #include <vector>
 #include "common/make_unique.h"
 #include "common/QSimApplication.h"
+#include <OgreResourceGroupManager.h>
 #include "common/FF7NameLookup.h"
 #include "data/QSimTriggersFile.h"
 #include "common/QSimStringUtil.h"
@@ -20,7 +22,7 @@ public:
     {
         if (mRoot)
         {
-            mRoot->addResourceLocation(mFullPath, type, mGroup);
+            Ogre::ResourceGroupManager::getSingleton().addResourceLocation(mFullPath, type, mGroup);
         }
     }
 
@@ -28,7 +30,7 @@ public:
     {
         if (mRoot)
         {
-            mRoot->removeResourceLocation(mFullPath, mGroup);
+            Ogre::ResourceGroupManager::getSingleton().removeResourceLocation(mFullPath, mGroup);
         }
     }
 

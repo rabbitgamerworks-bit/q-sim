@@ -94,7 +94,7 @@ AnimatedModel::Export( const ModelInfo& info )
 
     skeleton->optimiseAllAnimations();
     Ogre::SkeletonSerializer skeleton_serializer;
-    skeleton_serializer.exportSkeleton( skeleton.getPointer(), "exported/models/xenogears/field/units/" + info.data.name + ".skeleton" );
+    skeleton_serializer.exportSkeleton( skeleton.get(), "exported/models/xenogears/field/units/" + info.data.name + ".skeleton" );
 
     // Update bounds
     Ogre::AxisAlignedBox aabb( -999, -999, -999, 999, 999, 999 );
@@ -103,7 +103,7 @@ AnimatedModel::Export( const ModelInfo& info )
     mesh->setSkeletonName( "models/xenogears/field/units/" + info.data.name + ".skeleton" );
 
     Ogre::MeshSerializer ser;
-    ser.exportMesh( mesh.getPointer(), "exported/models/xenogears/field/units/" + info.data.name + ".mesh" );
+    ser.exportMesh( mesh.get(), "exported/models/xenogears/field/units/" + info.data.name + ".mesh" );
 
 
 

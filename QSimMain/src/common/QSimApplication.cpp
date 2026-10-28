@@ -14,12 +14,15 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.
 -----------------------------------------------------------------------------
 */
+#include "common/QSimNativeWindow.h"
 #include "common/QSimApplication.h"
 
+#include <iostream>
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 #include <OgreConfigFile.h>
 #include <OgreArchiveManager.h>
+#include <OgreMeshSerializer.h>
 
 #include "QSimGameState.h"
 #include "data/QSimAFileManager.h"
@@ -38,6 +41,8 @@ GNU General Public License for more details.
 #include "data/QSimTriggersFile.h"
 #include "data/QSimMapListFile.h"
 #include "common/make_unique.h"
+#include "common/QSimRTShaderSystem.h"
+#include "common/QSimLegacyScripts.h"
 #include "qsim_version.h"
 
 template<> QSim::Application *Ogre::Singleton<QSim::Application>::msSingleton = nullptr;
@@ -59,6 +64,8 @@ namespace QSim
     const char*     Application::CLI_PLUGINS_FILE_DESCRIPTION( "path to config file containing available plugins" );
     const char*     Application::CLI_RESOURCES_FILE( "resources-file" );
     const char*     Application::CLI_RESOURCES_FILE_DESCRIPTION( "path to config file containing available resources" );
+    const char*     Application::CLI_CONFIG_DIALOG( "config-dialog" );
+    const char*     Application::CLI_CONFIG_DIALOG_DESCRIPTION( "show the render system configuration dialog" );
 
     //--------------------------------------------------------------------------
     Application::Application( int argc, char *argv[] ) :
@@ -71,6 +78,7 @@ namespace QSim
     Application::~Application()
     {
         destroyComponents();
+        RTShaderSystem::shutdown();
     }
 
     //--------------------------------------------------------------------------
@@ -93,6 +101,8 @@ namespace QSim
         }
 
         m_root = std::make_unique<Ogre::Root>( m_plugins_filename, m_config_filename, m_log_filename );
+        // the game data still ships meshes in the Ogre 1.4 format (MeshSerializer_v1.41)
+        Ogre::MeshSerializer::enablePre1_8Formats( true );
         m_overlay_system = std::make_unique<Ogre::OverlaySystem>();
 
         Ogre::Log* default_log( Ogre::LogManager::getSingleton().getDefaultLog() );
@@ -101,31 +111,50 @@ namespace QSim
 
         //-------------------------------------------------------------------------
         // configure
-        // Show the configuration dialog and initialise the system
-        // You can skip this and use root.restoreConfig() to load configuration
-        // settings if you were sure there are valid ones saved in ogre.cfg
-        if(/* !m_root->restoreConfig() &&*/ !m_root->showConfigDialog() )
+        if( !configureRenderSystem() )
         {
             return false;
         }
 
         if (hideWindow)
         {
-            Ogre::NameValuePairList list;
-            list.emplace("hidden", "true");
             m_root->initialise(false, getWindowTitle());
-            m_render_window = m_root->createRenderWindow(getWindowTitle(), 1, 1, false, &list);
+            m_render_window = NativeWindow::createRenderWindow(*m_root, getWindowTitle(), 1, 1, false, nullptr, true);
         }
         else
         {
-            m_render_window = m_root->initialise(true, getWindowTitle());
+            m_root->initialise(false, getWindowTitle());
+            m_render_window = NativeWindow::createConfiguredRenderWindow(*m_root, getWindowTitle());
         }
 
+        initShaderGenerator();
+        LegacyScriptListener::install();
         registerArchiveFactories();
         loadResourcesConfig();
         initComponents();
 
         return true;
+    }
+
+    //--------------------------------------------------------------------------
+    bool
+    Application::configureRenderSystem()
+    {
+        return RTShaderSystem::configureRenderSystem( *m_root, m_show_config_dialog );
+    }
+
+    //--------------------------------------------------------------------------
+    void
+    Application::initShaderGenerator()
+    {
+        RTShaderSystem::initialise();
+    }
+
+    //--------------------------------------------------------------------------
+    void
+    Application::registerSceneManager( Ogre::SceneManager* scene_manager )
+    {
+        RTShaderSystem::registerSceneManager( scene_manager );
     }
 
     //--------------------------------------------------------------------------
@@ -221,6 +250,7 @@ namespace QSim
               , bpo::value< String >()->default_value( resources_filename )
               , CLI_RESOURCES_FILE_DESCRIPTION
             )
+            ( CLI_CONFIG_DIALOG, CLI_CONFIG_DIALOG_DESCRIPTION )
             ;
         bpo::variables_map vm;
         bpo::store( bpo::command_line_parser( argc, argv ).options( generic ).run(), vm );
@@ -236,6 +266,7 @@ namespace QSim
         m_log_filename          = vm[CLI_LOG_FILE].as< String >();
         m_plugins_filename      = vm[CLI_PLUGINS_FILE].as< String >();
         m_resources_filename    = vm[CLI_RESOURCES_FILE].as< String >();
+        m_show_config_dialog    = vm.count( CLI_CONFIG_DIALOG ) > 0;
 
         return true;
     }

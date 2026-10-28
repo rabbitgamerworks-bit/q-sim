@@ -39,42 +39,42 @@ namespace QSim
             virtual ~LGPArchive();
 
             /// @copydoc Ogre::Archive::isCaseSensitive
-            bool isCaseSensitive(void) const { return true; }
+            bool isCaseSensitive(void) const override { return true; }
 
             /// @copydoc Ogre::Archive::load
-            void load();
+            void load() override;
 
             /// @copydoc Ogre::Archive::unload
-            void unload();
+            void unload() override;
 
             /// @copydoc Ogre::Archive::open
-            Ogre::DataStreamPtr open(const String& filename, bool readOnly = true) const;
+            Ogre::DataStreamPtr open(const String& filename, bool readOnly = true) const override;
 
             /// @copydoc Archive::create
-            Ogre::DataStreamPtr create(const String& filename) const;
+            Ogre::DataStreamPtr create(const String& filename) override;
 
             /// @copydoc Archive::remove
-            void remove(const String& filename) const;
+            void remove(const String& filename) override;
 
             /// @copydoc Archive::list
-            Ogre::StringVectorPtr list(bool recursive = true, bool dirs = false);
+            Ogre::StringVectorPtr list(bool recursive = true, bool dirs = false) const override;
 
             /// @copydoc Archive::listFileInfo
-            Ogre::FileInfoListPtr listFileInfo(bool recursive = true, bool dirs = false);
+            Ogre::FileInfoListPtr listFileInfo(bool recursive = true, bool dirs = false) const override;
 
             /// @copydoc Archive::find
             Ogre::StringVectorPtr find(const String& pattern, bool recursive = true,
-                bool dirs = false);
+                bool dirs = false) const override;
 
             /// @copydoc Archive::findFileInfo
             Ogre::FileInfoListPtr findFileInfo(const String& pattern, bool recursive = true,
-                bool dirs = false) const;
+                bool dirs = false) const override;
 
             /// @copydoc Archive::exists
-            bool exists(const String& filename);
+            bool exists(const String& filename) const override;
 
             /// @copydoc Archive::getModifiedTime
-            time_t getModifiedTime(const String& filename);
+            time_t getModifiedTime(const String& filename) const override;
 
 
             struct FileEntry

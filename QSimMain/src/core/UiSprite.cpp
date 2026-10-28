@@ -2,6 +2,7 @@
 #include <OgreMaterialManager.h>
 
 #include "core/Logger.h"
+#include "common/QSimManualRenderable.h"
 #include "core/UiSprite.h"
 
 
@@ -31,7 +32,14 @@ UiSprite::Initialise()
     m_SceneManager = Ogre::Root::getSingleton().getSceneManager("Scene");
     m_RenderSystem = Ogre::Root::getSingletonPtr()->getRenderSystem();
 
-    m_Material = Ogre::MaterialManager::getSingleton().create("UiMaterials." + m_PathName, "General");
+    Ogre::MaterialManager& material_manager = Ogre::MaterialManager::getSingleton();
+    const Ogre::String material_name = "UiMaterials." + m_PathName;
+    // widgets can share a path name: replace the previous material, users keep their reference
+    if(material_manager.resourceExists(material_name, "General"))
+    {
+        material_manager.remove(material_name, "General");
+    }
+    m_Material = material_manager.create(material_name, "General");
     Ogre::Pass* pass = m_Material->getTechnique(0)->getPass(0);
     pass->setVertexColourTracking(Ogre::TVC_AMBIENT);
     pass->setCullingMode(Ogre::CULL_NONE);
@@ -46,6 +54,8 @@ UiSprite::Initialise()
     tex->setTextureName("system/blank.png");
     tex->setNumMipmaps(-1);
     tex->setTextureFiltering(Ogre::TFO_NONE);
+    // load now: Vulkan can not upload textures while a frame is being rendered
+    m_Material->load();
 
     CreateVertexBuffer();
 }
@@ -65,14 +75,8 @@ UiSprite::Render()
     {
         if(m_RenderOp.vertexData->vertexCount != 0)
         {
-            m_RenderSystem->_setWorldMatrix(Ogre::Matrix4::IDENTITY);
-            m_RenderSystem->_setProjectionMatrix(Ogre::Matrix4::IDENTITY);
-            m_RenderSystem->_setViewMatrix(Ogre::Matrix4::IDENTITY);
-
-            m_SceneManager->_setPass(m_Material->getTechnique(0)->getPass(0), true, false);
-
-            m_RenderSystem->setScissorTest(true, m_ScissorLeft, m_ScissorTop, m_ScissorRight, m_ScissorBottom);
-            m_RenderSystem->_render(m_RenderOp);
+            m_RenderSystem->setScissorTest(true, Ogre::Rect(m_ScissorLeft, m_ScissorTop, m_ScissorRight, m_ScissorBottom));
+            QSim::ManualRenderable::renderInClipSpace(m_SceneManager, m_RenderOp, m_Material);
             m_RenderSystem->setScissorTest(false);
         }
     }
@@ -268,5 +272,5 @@ UiSprite::DestroyVertexBuffer()
 {
     delete m_RenderOp.vertexData;
     m_RenderOp.vertexData = 0;
-    m_VertexBuffer.setNull();
+    m_VertexBuffer.reset();
 }

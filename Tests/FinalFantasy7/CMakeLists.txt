@@ -14,7 +14,7 @@ set(LIBRARIES
 )
 
 add_executable(TestFF7FLevelFileSerializer
-    src/test_FF7FLevelFileSerializer
+    src/test_FF7FLevelFileSerializer.cpp
 )
 SET_PROPERTY(TARGET TestFF7FLevelFileSerializer PROPERTY FOLDER "tests")
 

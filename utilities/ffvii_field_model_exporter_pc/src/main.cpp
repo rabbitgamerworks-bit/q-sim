@@ -56,11 +56,11 @@ void attachMesh( Ogre::MeshPtr &mesh )
 void exportMesh( const Ogre::MeshPtr &mesh )
 {
     Ogre::MeshSerializer        mesh_ser;
-    mesh_ser.exportMesh( mesh.getPointer(), mesh->getName() );
+    mesh_ser.exportMesh( mesh.get(), mesh->getName() );
 
     Ogre::SkeletonPtr           skeleton( mesh->getSkeleton() );
     Ogre::SkeletonSerializer    sk_ser;
-    sk_ser.exportSkeleton( skeleton.getPointer(), skeleton->getName() );
+    sk_ser.exportSkeleton( skeleton.get(), skeleton->getName() );
 
     Ogre::Mesh::SubMeshIterator it( mesh->getSubMeshIterator() );
     Ogre::MaterialSerializer    mat_ser;
@@ -69,7 +69,7 @@ void exportMesh( const Ogre::MeshPtr &mesh )
     {
         Ogre::SubMesh *sub_mesh( it.getNext() );
         Ogre::MaterialPtr mat( Ogre::MaterialManager::getSingleton().getByName( sub_mesh->getMaterialName() ) );
-        if( !mat.isNull() )
+        if( mat )
         {
             mat_ser.queueForExport( mat );
         }
@@ -89,9 +89,9 @@ int main( int argc, char *argv[] )
         QSim::FF7::FieldModelExporterPC app(argc, argv);
         if (!app.initOgre()) return 0;
 
-        Ogre::SceneManager*         scene_manager(Ogre::Root::getSingleton().createSceneManager(Ogre::ST_GENERIC, "Scene"));
+        Ogre::SceneManager*         scene_manager(Ogre::Root::getSingleton().createSceneManager(Ogre::SMT_DEFAULT, "Scene"));
         QSim::AFilePtr            a;
-        QSim::HRCFilePtr          hrc = QSim::HRCFileManager::getSingleton().load("adda.hrc", "FFVII").staticCast<QSim::HRCFile>();
+        QSim::HRCFilePtr          hrc = Ogre::static_pointer_cast<QSim::HRCFile>(QSim::HRCFileManager::getSingleton().load("adda.hrc", "FFVII"));
         QSim::AFileManager       &afl_mgr(QSim::AFileManager::getSingleton());
 
         auto meshName = QSim::FF7::NameLookup::model("adda.hrc") + ".mesh";
@@ -100,11 +100,11 @@ int main( int argc, char *argv[] )
         Ogre::SkeletonPtr skeleton(mesh->getSkeleton());
 
 
-        a = afl_mgr.load("aeae.a", "FFVII").staticCast<QSim::AFile>();
+        a = Ogre::static_pointer_cast<QSim::AFile>(afl_mgr.load("aeae.a", "FFVII"));
         a->addTo(skeleton, "Idle");
-        a = afl_mgr.load("aeaf.a", "FFVII").staticCast<QSim::AFile>();
+        a = Ogre::static_pointer_cast<QSim::AFile>(afl_mgr.load("aeaf.a", "FFVII"));
         a->addTo(skeleton, "Walk");
-        a = afl_mgr.load("aeba.a", "FFVII").staticCast<QSim::AFile>();
+        a = Ogre::static_pointer_cast<QSim::AFile>(afl_mgr.load("aeba.a", "FFVII"));
         a->addTo(skeleton, "Run");
 
 
@@ -115,12 +115,12 @@ int main( int argc, char *argv[] )
         entitys[0]->setVisible(true);
 
         QSim::LZSFLevelFileManager   &fmgr(QSim::LZSFLevelFileManager::getSingleton());
-        // QSim::FLevelFilePtr           f = fmgr.load( "ancnt1", "FFVII" ).staticCast<QSim::FLevelFile>();
+        // QSim::FLevelFilePtr           f = Ogre::static_pointer_cast<QSim::FLevelFile>(fmgr.load( "ancnt1", "FFVII" ));
 
         /*
         mesh = Ogre::MeshManager::getSingleton().load(meshName, "FFVII");
         skeleton = mesh->getSkeleton();
-        a = afl_mgr.load("bvjf.a", "FFVII").staticCast<QSim::AFile>();
+        a = Ogre::static_pointer_cast<QSim::AFile>(afl_mgr.load("bvjf.a", "FFVII"));
         a->addTo(skeleton, "JumpFromTrain");
         */
 
@@ -148,10 +148,10 @@ int main( int argc, char *argv[] )
         //   node->attachObject( entitys[0] );
 
         Ogre::Root::getSingleton().startRendering();
-        skeleton.setNull();
-        mesh.setNull();
-        //    f.setNull();
-        hrc.setNull();
+        skeleton.reset();
+        mesh.reset();
+        //    f.reset();
+        hrc.reset();
         //delete rect;
         return 0;
     }

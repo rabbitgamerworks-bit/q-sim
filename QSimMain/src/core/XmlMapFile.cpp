@@ -39,7 +39,7 @@ XmlMapFile::LoadMap()
             if(!name.empty())
             {
                 QSim::WalkmeshFileManager::getSingleton();
-                QSim::WalkmeshFilePtr walkmesh =  QSim::WalkmeshFileManager::getSingleton().load(name, "Game").staticCast<QSim::WalkmeshFile>();
+                QSim::WalkmeshFilePtr walkmesh =  Ogre::static_pointer_cast<QSim::WalkmeshFile>(QSim::WalkmeshFileManager::getSingleton().load(name, "Game"));
                 EntityManager::getSingleton().GetWalkmesh()->load(walkmesh);
             }
         }
@@ -54,7 +54,7 @@ XmlMapFile::LoadMap()
             if(name != "")
             {
                 // TODO migrate this code to a Resource and use it's group to load background
-                QSim::Background2DFilePtr background =  QSim::Background2DFileManager::getSingleton().load(name, "Game").staticCast<QSim::Background2DFile>();
+                QSim::Background2DFilePtr background =  Ogre::static_pointer_cast<QSim::Background2DFile>(QSim::Background2DFileManager::getSingleton().load(name, "Game"));
                 EntityManager::getSingleton().GetBackground2D()->load(background);
             }
         }

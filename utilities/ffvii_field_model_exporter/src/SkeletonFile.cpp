@@ -40,7 +40,7 @@ SkeletonFile::~SkeletonFile()
 void
 SkeletonFile::GetData( std::vector< s16 >& skeleton_length, const int offset_to_bones, const int number_of_bones, Ogre::SkeletonPtr skeleton )
 {
-    if (skeleton.isNull() == false)
+    if (skeleton)
     {
         Ogre::Bone* root = skeleton->createBone( "0", 0 );
     }
@@ -52,7 +52,7 @@ SkeletonFile::GetData( std::vector< s16 >& skeleton_length, const int offset_to_
 
         skeleton_length.push_back( length );
 
-        if (skeleton.isNull() == false)
+        if (skeleton)
         {
             //LOGGER->Log(LOGGER_INFO, "Skeleton bone-%d length-%d parent-%d part-%d", i, length, parent_id, GetU8(offset_to_bones + i * 0x04 + 0x03));
 

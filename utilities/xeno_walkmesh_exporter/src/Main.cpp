@@ -1,5 +1,9 @@
 // $Id: Main.cpp 147 2007-02-24 06:13:17Z super_gb $
 
+#include "common/QSimNativeWindow.h"
+#include <OgreWindowEventUtilities.h>
+#include <OgreOverlaySystem.h>
+#include "common/QSimRTShaderSystem.h"
 #include <Ogre.h>
 #include <OIS/OIS.h>
 #include <stdio.h>
@@ -23,7 +27,7 @@ Uint8 state;
 
 
 
-class DisplayFrameListener : public Ogre::FrameListener, public Ogre::WindowEventListener, public OIS::KeyListener, public OIS::MouseListener
+class DisplayFrameListener : public Ogre::FrameListener, public OgreBites::WindowEventListener, public OIS::KeyListener, public OIS::MouseListener
 {
 public:
     // Constructor takes a RenderWindow because it uses that to determine input context
@@ -41,7 +45,7 @@ public:
         size_t windowHnd = 0;
         std::ostringstream windowHndStr;
 
-        win->getCustomAttribute("WINDOW", &windowHnd);
+        windowHnd = QSim::NativeWindow::getHandle(win);
         windowHndStr << windowHnd;
         pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
 
@@ -54,7 +58,7 @@ public:
         m_Mouse->setEventCallback(this);
 
         //Register as a Window listener
-        Ogre::WindowEventUtilities::addWindowEventListener(m_Window, this);
+        QSim::NativeWindow::addWindowEventListener(m_Window, this);
     }
 
     virtual
@@ -66,7 +70,7 @@ public:
         OIS::InputManager::destroyInputSystem(m_InputManager);
 
         //Remove ourself as a Window listener
-        Ogre::WindowEventUtilities::removeWindowEventListener(m_Window, this);
+        QSim::NativeWindow::removeWindowEventListener(m_Window, this);
         windowClosed(m_Window);
     }
 
@@ -115,19 +119,19 @@ public:
 
             if (input_event_array[i].name == "camera_forward" && (input_event_array[i].type == IE_PRESSED || input_event_array[i].type == IE_REPEATED))
             {
-                scene_manager->getCamera("Camera")->moveRelative(Ogre::Vector3( 0, 0, -2));
+                scene_manager->getCamera("Camera")->getParentSceneNode()->translate(Ogre::Vector3( 0, 0, -2), Ogre::Node::TS_LOCAL);
             }
             if (input_event_array[i].name == "camera_left" && (input_event_array[i].type == IE_PRESSED || input_event_array[i].type == IE_REPEATED))
             {
-                scene_manager->getCamera("Camera")->moveRelative(Ogre::Vector3(-2, 0,  0));
+                scene_manager->getCamera("Camera")->getParentSceneNode()->translate(Ogre::Vector3(-2, 0,  0), Ogre::Node::TS_LOCAL);
             }
             if (input_event_array[i].name == "camera_backward" && (input_event_array[i].type == IE_PRESSED || input_event_array[i].type == IE_REPEATED))
             {
-                scene_manager->getCamera("Camera")->moveRelative(Ogre::Vector3( 0, 0,  2));
+                scene_manager->getCamera("Camera")->getParentSceneNode()->translate(Ogre::Vector3( 0, 0,  2), Ogre::Node::TS_LOCAL);
             }
             if (input_event_array[i].name == "camera_right" && (input_event_array[i].type == IE_PRESSED || input_event_array[i].type == IE_REPEATED))
             {
-                scene_manager->getCamera("Camera")->moveRelative(Ogre::Vector3( 2, 0,  0));
+                scene_manager->getCamera("Camera")->getParentSceneNode()->translate(Ogre::Vector3( 2, 0,  0), Ogre::Node::TS_LOCAL);
             }
 
             if (input_event_array[i].name == "camera_rotate"  && input_event_array[i].type == IE_PRESSED)
@@ -141,8 +145,8 @@ public:
 
             if (m_CameraFreeRotate && input_event_array[i].name == "mouse_move")
             {
-                scene_manager->getCamera("Camera")->rotate(Ogre::Vector3::UNIT_Y, Ogre::Radian(Ogre::Degree(input_event_array[i].x * 0.13f)));
-                scene_manager->getCamera("Camera")->pitch(Ogre::Degree(-input_event_array[i].y * 0.13f));
+                scene_manager->getCamera("Camera")->getParentSceneNode()->rotate(Ogre::Vector3::UNIT_Y, Ogre::Radian(Ogre::Degree(input_event_array[i].x * 0.13f)), Ogre::Node::TS_PARENT);
+                scene_manager->getCamera("Camera")->getParentSceneNode()->pitch(Ogre::Degree(-input_event_array[i].y * 0.13f));
             }
 
 
@@ -218,25 +222,32 @@ main(int argc, char *argv[])
 
     root = new Ogre::Root("plugins.cfg", "q-sim.cfg", "ogre q-sim.log");
 
-    if (root->restoreConfig() == true || root->showConfigDialog() == true)
+    if (QSim::RTShaderSystem::configureRenderSystem(*root, false))
     {
-        window = root->initialise(true, "FFVII Model Exporter 0.00 alpha3");
+        root->initialise(false);
+        window = QSim::NativeWindow::createConfiguredRenderWindow(*root, "FFVII Model Exporter 0.00 alpha3");
     }
     else
     {
         return 0;
     }
+    QSim::RTShaderSystem::initialise();
+    // creates the OverlayManager used by the walkmesh debug texts
+    Ogre::OverlaySystem* overlay_system = new Ogre::OverlaySystem();
 
     DisplayFrameListener* frame_listener = new DisplayFrameListener(window);
     root->addFrameListener(frame_listener);
 
-    scene_manager = root->createSceneManager(Ogre::ST_GENERIC, "Scene");
+    scene_manager = root->createSceneManager(Ogre::SMT_DEFAULT, "Scene");
+    scene_manager->addRenderQueueListener(overlay_system);
+    QSim::RTShaderSystem::registerSceneManager(scene_manager);
     scene_manager->setAmbientLight(Ogre::ColourValue(1.0, 1.0, 1.0));
 
     camera = scene_manager->createCamera("Camera");
     camera->setNearClipDistance(5);
 
     viewport = window->addViewport(camera);
+    QSim::RTShaderSystem::registerViewport(viewport);
     viewport->setBackgroundColour(Ogre::ColourValue(0, 0, 0));
     camera->setAspectRatio(Ogre::Real(viewport->getActualWidth()) / Ogre::Real(viewport->getActualHeight()));
 
@@ -263,8 +274,12 @@ main(int argc, char *argv[])
 
 
     camera        = scene_manager->getCamera("Camera");
-    camera->setPosition(300, -500, 300);
-    camera->lookAt(0, 0, 0);
+    // created after clearScene, which destroys all scene nodes
+    Ogre::SceneNode* camera_node = scene_manager->getRootSceneNode()->createChildSceneNode("CameraNode");
+    camera_node->setFixedYawAxis(true);
+    camera_node->attachObject(camera);
+    camera_node->setPosition(300, -500, 300);
+    camera_node->lookAt(Ogre::Vector3(0, 0, 0), Ogre::Node::TS_WORLD);
 
 
 
@@ -295,8 +310,10 @@ main(int argc, char *argv[])
     SAFE_DELETE(LOGGER)
     SAFE_DELETE(REALFILESYSTEM)
 
-    delete root;
     delete frame_listener;
+    QSim::RTShaderSystem::shutdown();
+    delete overlay_system;
+    delete root;
 
     return 0;
 }

@@ -1,3 +1,5 @@
+#include "common/QSimNativeWindow.h"
+#include "common/QSimRTShaderSystem.h"
 #include "Main.h"
 
 #include <Ogre.h>
@@ -26,16 +28,13 @@ main( int argc, char *argv[] )
     Ogre::RenderWindow* window;
 
     root = new Ogre::Root( "", "" );
-#ifndef _DEBUG
-    root->loadPlugin( "RenderSystem_GL.dll" );
-#else
-    root->loadPlugin( "RenderSystem_GL_d.dll" );
-#endif
-    root->setRenderSystem( root->getAvailableRenderers()[ 0 ] );
+    QSim::RTShaderSystem::loadVulkanPlugins( *root );
+    QSim::RTShaderSystem::configureRenderSystem( *root, false );
     root->initialise( false );
     Ogre::NameValuePairList misc;
     misc[ "title" ] = "FFVII Exporter";
-    window = root->createRenderWindow( "QSimWindow", 800, 600, false, &misc );
+    window = QSim::NativeWindow::createRenderWindow( *root, misc[ "title" ], 800, 600, false, &misc );
+    QSim::RTShaderSystem::initialise();
 
 
     LOGGER = new Logger( "game.log" );
@@ -133,6 +132,10 @@ main( int argc, char *argv[] )
 
 
     delete LOGGER;
+
+
+
+    QSim::RTShaderSystem::shutdown();
 
 
 
