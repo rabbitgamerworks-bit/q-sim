@@ -36,23 +36,23 @@ struct Model
 {
     Model(void);
     ~Model(void);
-    void Update(const QGears::uint32 delta_time);
-    void DrawHierarchy(const QGears::sint8 level) const;
-    void AddBone(const QGears::sint16 length, const QGears::sint8 parent_id);
+    void Update(const QSim::uint32 delta_time);
+    void DrawHierarchy(const QSim::sint8 level) const;
+    void AddBone(const QSim::sint16 length, const QSim::sint8 parent_id);
     //void AddPart(const TotalGeometry& geometry, const int parent_bone);
     void AddAnimation(const Animation& animation);
-    void SetAnimation(QGears::uint32 animation_id);
+    void SetAnimation(QSim::uint32 animation_id);
     int GetNumberOfBones(void) const;
 
-    QGears::uint32 m_CurrentFrame;
-    QGears::uint32 m_PlayedAnimation;
-    QGears::uint32 m_AnimationWait;
+    QSim::uint32 m_CurrentFrame;
+    QSim::uint32 m_PlayedAnimation;
+    QSim::uint32 m_AnimationWait;
     float m_Scale;
 
     struct Bone
     {
-        QGears::sint16 length;
-        QGears::sint8  parent_id;
+        QSim::sint16 length;
+        QSim::sint8  parent_id;
     };
     std::vector<Bone>             m_Skeleton;
 };

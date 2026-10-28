@@ -1,5 +1,5 @@
 include_directories(
-    ${QGears_INCLUDE_DIRS}
+    ${QSim_INCLUDE_DIRS}
 	luabind
 	luajit/src
 	luabind/luabind

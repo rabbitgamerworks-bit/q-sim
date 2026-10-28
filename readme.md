@@ -1,21 +1,21 @@
 |  Build |   status | 
 |:---:|:---:|
-|Linux/OSX|[![Build Status](https://travis-ci.org/q-gears/q-gears.svg?branch=master)](https://travis-ci.org/q-gears/q-gears)  |
+|Linux/OSX|[![Build Status](https://travis-ci.org/q-sim/q-sim.svg?branch=master)](https://travis-ci.org/q-sim/q-sim)  |
 |Windows 32 |  [![Win32 status](https://paulsapps.visualstudio.com/DefaultCollection/_apis/public/build/definitions/8a250c8d-747e-4705-b4ff-802acb5a79d9/4/badge)]() | 
 | Windows 64| [![Win64 status](https://paulsapps.visualstudio.com/DefaultCollection/_apis/public/build/definitions/8a250c8d-747e-4705-b4ff-802acb5a79d9/5/badge)]()  |
-| Coverage   |[![Coverage Status](https://coveralls.io/repos/q-gears/q-gears/badge.svg)](https://coveralls.io/r/q-gears/q-gears)  |
+| Coverage   |[![Coverage Status](https://coveralls.io/repos/q-sim/q-sim/badge.svg)](https://coveralls.io/r/q-sim/q-sim)  |
 | Coverity   |[![Coverity scan status](https://scan.coverity.com/projects/3861/badge.svg)](https://scan.coverity.com/projects/3861) |
 
 
-# What is QGears? 
+# What is QSim? 
 
-Q-Gears is an RPG engine for games like Squaresoft's Final Fantasy 7, Final Fantasy IX or Xenogears. It is designed to be cross-platfrom and run on modern operating systems such as Win32 and Linux.
+Q-Sim is an RPG engine for games like Squaresoft's Final Fantasy 7, Final Fantasy IX or Xenogears. It is designed to be cross-platfrom and run on modern operating systems such as Win32 and Linux.
 
-## Where can I get a build of QGears?
+## Where can I get a build of QSim?
 
-See here for builds http://qgears.itscovarr.com here you will find nightly builds and Linux builds for every version. Since the Windows version only builds daily not every change will have a matching Windows build.
+See here for builds http://qsim.itscovarr.com here you will find nightly builds and Linux builds for every version. Since the Windows version only builds daily not every change will have a matching Windows build.
 
-### How do I build QGears?
+### How do I build QSim?
 
 
 #### Ubuntu Linux 14.04
@@ -38,12 +38,12 @@ Ogre version must be 1.9, Qt version 4.8, Boost version must be 55, gcc version 
 * sudo apt-get install libqt4-dev
 ```
 
-**Sync down the QGears source code:**
+**Sync down the QSim source code:**
 ```
-mkdir qgears
-cd qgears
-git clone --recursive https://github.com/q-gears/q-gears.git
-cd q-gears
+mkdir qsim
+cd qsim
+git clone --recursive https://github.com/rabbitgamerworks-bit/q-sim.git
+cd q-sim
 ```
 
 **Build the code:**
@@ -114,12 +114,12 @@ cd ..
 cd ..
 ```
 
-**Sync down the QGears source code:**
+**Sync down the QSim source code:**
 ```
-mkdir qgears
-cd qgears
-git clone --recursive https://github.com/q-gears/q-gears.git
-cd q-gears
+mkdir qsim
+cd qsim
+git clone --recursive https://github.com/rabbitgamerworks-bit/q-sim.git
+cd q-sim
 ```
 
 **Build the code:**
@@ -215,17 +215,17 @@ configure -platform win32-msvc2013 -no-webkit -debug-and-release -no-phonon -no-
 
 Key in "o" to use the open source license and then "y" to agree. Once this is done enter "nmake" to finish compling Qt.
 
-Now sync down the QGears source code, first create a directory some where you want to sync the code to using Windows explorer. Then right in the newly created directory and select "GIT Bash here".
+Now sync down the QSim source code, first create a directory some where you want to sync the code to using Windows explorer. Then right in the newly created directory and select "GIT Bash here".
 
 In the git bash enter:
 ```
-git clone --recursive https://github.com/q-gears/q-gears.git
+git clone --recursive https://github.com/rabbitgamerworks-bit/q-sim.git
 ```
 
-**Building the QGears code:**
+**Building the QSim code:**
 First launch a "Visual studio developer command prompt" (Found under "tools" in the start menu in the Visual studio directory" (you've already done this if you've got this far).
 
-Now cd to where you synced the qgears source code to. For me this was "cd C:\Users\paul\Desktop\qgears\src"
+Now cd to where you synced the qsim source code to. For me this was "cd C:\Users\paul\Desktop\qsim\src"
 ```
 mkdir build
 cd build
@@ -236,14 +236,14 @@ cmake .. -DZLIB_ROOT=C:/zlib128-dll -DBOOST_ROOT=C:/boost_1_55_0
 
 (Note how we use / and not \ in paths here).
 
-Now you can open the newly created QGears.sln in Visual Studio and build Win32/Release or Debug. If files are added/deleted/or the depends change then repeat the set and cmake commands in the Visual Studio command prompt in order to update QGears.sln.
+Now you can open the newly created QSim.sln in Visual Studio and build Win32/Release or Debug. If files are added/deleted/or the depends change then repeat the set and cmake commands in the Visual Studio command prompt in order to update QSim.sln.
 
-You can also build the sln file from the command line by entering "msbuild QGears.sln /m" in the Visual Studio command prompt.
+You can also build the sln file from the command line by entering "msbuild QSim.sln /m" in the Visual Studio command prompt.
 
 To build the installer build the "PACKAGE" project from VisualStudio, this will generate an MSI, alternatively you can run it from the Visual Studio command prompt by entering "cpack -C Debug" (replace Debug with Release if building release).
 
 # What next?
 
-Now that you've got everything built see the wiki for how to run QGears, coding style, how to start hacking etc.
+Now that you've got everything built see the wiki for how to run QSim, coding style, how to start hacking etc.
 
-https://github.com/q-gears/q-gears/wiki
+https://github.com/rabbitgamerworks-bit/q-sim/wiki

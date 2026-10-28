@@ -1,6 +1,6 @@
 Format: http://dep.debian.net/deps/dep5
-Upstream-Name: qgears
-Source: http://sourceforge.net/projects/q-gears
+Upstream-Name: qsim
+Source: http://github.com/rabbitgamerworks-bit/q-sim
 
 Files: debian/*
 Copyright: <get years from akari> CORRECTCOPYRIGHTHOLDER <CCR EMAIL>

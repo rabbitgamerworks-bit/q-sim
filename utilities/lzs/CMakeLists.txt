@@ -11,7 +11,7 @@ lzs.cpp
 )
 
 add_definitions(
-    -DQGEARS_ADD_MANAGERS
+    -DQSIM_ADD_MANAGERS
 )
 
 add_executable(lzs
@@ -29,8 +29,8 @@ endif()
 
 set(LIBRARIES
     Utility
-    QGearsMain
-    q-gears-data
+    QSimMain
+    q-sim-data
 )
 target_link_libraries(lzs    ${LIBRARIES})
 

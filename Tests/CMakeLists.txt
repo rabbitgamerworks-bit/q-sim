@@ -8,7 +8,7 @@ if(UNIX OR APPLE)
     )
 endif()
 
-set(QGearsMain_SOURCE_DIR ${QGears_SOURCE_DIR}/QGearsMain)
+set(QSimMain_SOURCE_DIR ${QSim_SOURCE_DIR}/QSimMain)
 
-add_subdirectory(QGearsMain)
+add_subdirectory(QSimMain)
 add_subdirectory(FinalFantasy7)

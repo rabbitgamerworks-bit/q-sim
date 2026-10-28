@@ -2422,7 +2422,7 @@ void MixXA()
 
 void FeedXA(xa_decode_t *xap)
 {
-#ifdef QGears_SOUND
+#ifdef QSim_SOUND
 	int sinc, spos, i, iSize, iPlace, vl, vr;
 
 	if(!bSPUIsOpen)

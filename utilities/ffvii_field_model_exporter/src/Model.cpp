@@ -5,7 +5,7 @@
 
 #include "Model.h"
 
-using namespace QGears;
+using namespace QSim;
 
 uint32 g_ModelNumber = 0;
 

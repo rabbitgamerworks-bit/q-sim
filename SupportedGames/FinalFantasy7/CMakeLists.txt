@@ -20,8 +20,8 @@ set(SOURCE_FILES
 
 
 include_directories(
-    ${QGears_INCLUDE_DIRS}
-    ${QGears_SOURCE_DIR}/QGearsMain/include
+    ${QSim_INCLUDE_DIRS}
+    ${QSim_SOURCE_DIR}/QSimMain/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
@@ -29,12 +29,12 @@ add_library(FinalFantasy7 STATIC
   ${HEADER_FILES}
   ${SOURCE_FILES}
 )
-SET_PROPERTY(TARGET FinalFantasy7 PROPERTY FOLDER "q-gears")
+SET_PROPERTY(TARGET FinalFantasy7 PROPERTY FOLDER "q-sim")
 
 set(LIBRARIES
     ${OGRE_LIBRARIES}
     ${OIS_LIBRARIES}
-    QGearsMain
+    QSimMain
 )
 
 target_link_libraries(FinalFantasy7 ${LIBRARIES})

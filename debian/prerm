@@ -1,7 +1,7 @@
 #!/bin/bash
 #DEBHELPER#
 set -e
-if [ -d /usr/share/q-gears ];then
-  rm -r /usr/share/q-gears 
+if [ -d /usr/share/q-sim ];then
+  rm -r /usr/share/q-sim 
 else exit 0
 fi

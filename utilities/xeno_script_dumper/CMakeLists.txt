@@ -46,7 +46,7 @@ set(SOURCE_FILES
 )
 
 add_definitions(
-    -DQGEARS_ADD_MANAGERS
+    -DQSIM_ADD_MANAGERS
 )
 
 add_executable(xeno_script_dumper
@@ -64,8 +64,8 @@ endif()
 
 set(LIBRARIES
     Utility
-    QGearsMain
-    q-gears-data
+    QSimMain
+    q-sim-data
 )
 target_link_libraries(xeno_script_dumper    ${LIBRARIES})
 

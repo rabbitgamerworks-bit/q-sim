@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 2.6)
-project(QGears)
-set (CMAKE_PACKAGE_ICON q-gears.png)
+project(QSim)
+set (CMAKE_PACKAGE_ICON q-sim.png)
 #set( CMAKE_VERBOSE_MAKEFILE on )
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/dependencies/cotire/CMake")
 include(cotire)
 
 # The version number.
-set(QGears_VERSION_MAJOR 0)
-set(QGears_VERSION_MINOR 22)
-set(QGears_VERSION_PATCH 0)
+set(QSim_VERSION_MAJOR 0)
+set(QSim_VERSION_MINOR 22)
+set(QSim_VERSION_PATCH 0)
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "")
   # CMake defaults to leaving CMAKE_BUILD_TYPE empty. This screws up
@@ -29,17 +29,17 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin_debug)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin_debug)
 
 # Generate header containing window title/version information
-set(QGEARS_VERSION "Q-Gears v${QGears_VERSION_MAJOR}.${QGears_VERSION_MINOR}.${QGears_VERSION_PATCH} (pre-alpha walk carefully)")
+set(QSIM_VERSION "Q-Sim v${QSim_VERSION_MAJOR}.${QSim_VERSION_MINOR}.${QSim_VERSION_PATCH} (pre-alpha walk carefully)")
 configure_file(configure_version_file.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/configure_version_file.cmake @ONLY)
 
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/qgears_version.h
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/qsim_version.h
   COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/configure_version_file.cmake
   DEPENDS
     ${CMAKE_CURRENT_BINARY_DIR}/configure_version_file.cmake
-    ${CMAKE_CURRENT_SOURCE_DIR}/QGearsMain/include/qgears_version.h.in
-  COMMENT "Configuring qgears_version.h"
+    ${CMAKE_CURRENT_SOURCE_DIR}/QSimMain/include/qsim_version.h.in
+  COMMENT "Configuring qsim_version.h"
   VERBATIM)
-add_custom_target(configure_qgears_version ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/qgears_version.h)
+add_custom_target(configure_qsim_version ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/qsim_version.h)
 
 # Enable Visual Studio solution "folders"
 SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON) 
@@ -60,11 +60,11 @@ set(OGRE_FRAMEWORK_INCLUDES
       ${CMAKE_CURRENT_SOURCE_DIR}/OgreSDK/include
 )
 
-option(QGears_BUILD_PLUGINS     "Build the plugins"     TRUE)
-option(QGears_BUILD_UTILITIES   "Build the utilities"   TRUE)
-option(QGears_BUILD_TESTS       "Build the unit tests"  TRUE)
-option(QGears_MULTITHREADING    "Enable multithreading" FALSE)
-option(QGears_SOUND             "Enable Sound"          FALSE)
+option(QSim_BUILD_PLUGINS     "Build the plugins"     TRUE)
+option(QSim_BUILD_UTILITIES   "Build the utilities"   TRUE)
+option(QSim_BUILD_TESTS       "Build the unit tests"  TRUE)
+option(QSim_MULTITHREADING    "Enable multithreading" FALSE)
+option(QSim_SOUND             "Enable Sound"          FALSE)
 
 find_path(OGRE_CMAKE_MODULE_PATH FindOGRE.cmake
     HINTS
@@ -83,14 +83,14 @@ endif()
 set(CMAKE_MODULE_PATH "${OGRE_CMAKE_MODULE_PATH};${CMAKE_MODULE_PATH}")
 set(CMAKE_MODULE_PATH 
   "${CMAKE_MODULE_PATH}"
-  "${QGears_SOURCE_DIR}/CMake" 
+  "${QSim_SOURCE_DIR}/CMake" 
 )
 
 set(CMAKE_DEBUG_POSTFIX "_d")
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX
-    "${QGears_SOURCE_DIR}/output" CACHE PATH "Q-Gears install prefix" FORCE
+    "${QSim_SOURCE_DIR}/output" CACHE PATH "Q-Sim install prefix" FORCE
   )
 endif()
 
@@ -143,36 +143,36 @@ if (NOT OGRE_BUILD_PLATFORM_IPHONE)
 
         find_package(Boost COMPONENTS program_options filesystem QUIET)
         set(OGRE_LIBRARIES ${OGRE_LIBRARIES} ${Boost_LIBRARIES})
-        set(QGears_LIBRARIES ${OGRE_LIBRARIES})
+        set(QSim_LIBRARIES ${OGRE_LIBRARIES})
         
-        if(QGears_SOUND)
+        if(QSim_SOUND)
             find_package(OpenAL REQUIRED)
             find_package(OggVorbis REQUIRED)
-            add_definitions(-DQGears_SOUND)
-            set(QGears_LIBRARIES
-                ${QGears_LIBRARIES}
+            add_definitions(-DQSim_SOUND)
+            set(QSim_LIBRARIES
+                ${QSim_LIBRARIES}
                 ${OPENAL_LIBRARY}
                 ${OGGVORBIS_LIBRARIES}
             )
         endif()
 
-        if(QGears_MULTITHREADING)
+        if(QSim_MULTITHREADING)
             # Find Threads
             find_package (Threads REQUIRED)
-            set(QGears_LIBRARIES
-                ${QGears_LIBRARIES}
+            set(QSim_LIBRARIES
+                ${QSim_LIBRARIES}
                 ${CMAKE_THREAD_LIBS_INIT}
             )
         endif()
 
-        if(QGears_BUILD_TESTS)
+        if(QSim_BUILD_TESTS)
         message(STATUS "Looking for boost unit test..")
             find_package(Boost COMPONENTS unit_test_framework REQUIRED)
-            set(QGears_TEST_LIBRARIES
+            set(QSim_TEST_LIBRARIES
                 ${OGRE_LIBRARIES}
                 ${Boost_LIBRARIES}
             )
-            message(STATUS "Test libs = ${QGears_TEST_LIBRARIES}")
+            message(STATUS "Test libs = ${QSim_TEST_LIBRARIES}")
             # enable CTest
             enable_testing()
         endif()
@@ -186,8 +186,8 @@ if (Boost_LIBRARIES STREQUAL "")
 message(SEND_ERROR "Boost_LIBRARIES is not set")
 endif()
 
-set(QGears_INCLUDE_DIRS
-    ${QGears_INCLUDE_DIRS}
+set(QSim_INCLUDE_DIRS
+    ${QSim_INCLUDE_DIRS}
     ${OIS_INCLUDE_DIRS}
     ${OGRE_INCLUDE_DIRS}
     ${OGRE_Overlay_INCLUDE_DIRS}
@@ -220,18 +220,18 @@ endif()
 
 add_definitions(-DTIXML_USE_STL)
 add_subdirectory(dependencies)
-add_subdirectory(QGearsMain)
+add_subdirectory(QSimMain)
 add_subdirectory(SupportedGames)
 
-if(QGears_BUILD_PLUGINS)
+if(QSim_BUILD_PLUGINS)
     add_subdirectory(PlugIns)
 endif()
 
-if(QGears_BUILD_UTILITIES)
+if(QSim_BUILD_UTILITIES)
     add_subdirectory(utilities)
 endif()
 
-if(QGears_BUILD_TESTS)
+if(QSim_BUILD_TESTS)
     add_subdirectory(Tests)
 endif()
 
@@ -241,10 +241,10 @@ SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/output)
 # DO NOT include on win32 - causes CRT dlls to be included
 #INCLUDE(InstallRequiredSystemLibraries)
 
-set(CPACK_PACKAGE_NAME "q-gears")
-SET(CPACK_PACKAGE_VERSION ${QGears_VERSION_MAJOR}.${QGears_VERSION_MINOR}.${QGears_VERSION_PATCH})
+set(CPACK_PACKAGE_NAME "q-sim")
+SET(CPACK_PACKAGE_VERSION ${QSim_VERSION_MAJOR}.${QSim_VERSION_MINOR}.${QSim_VERSION_PATCH})
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A Free Final Fantasy VII Engine")
-SET(CPACK_PACKAGE_VENDOR "QGears team")
+SET(CPACK_PACKAGE_VENDOR "QSim team")
 # TODO: Need to set these up properly, installing build instructions is a bit strange :)
 SET(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/COPYING.txt")
 #SET(CPACK_RESOURCE_FILE_README "${PROJECT_SOURCE_DIR}/readme.md")
@@ -317,17 +317,17 @@ elseif(UNIX)
     #Find out what architecture are we running on and set the package architecture 
     
     # set the generic files needing to be installed
-    install( FILES ${PROJECT_SOURCE_DIR}/q-gears.png DESTINATION ./share/pixmaps/ )
-    install( FILES ${PROJECT_SOURCE_DIR}/q-gears.desktop DESTINATION ./share/applications/ )
-    install( FILES ${PROJECT_SOURCE_DIR}/debian/menu DESTINATION share/menu/ RENAME q-gears )
-    install( FILES ${PROJECT_SOURCE_DIR}/output/plugins.cfg_linux DESTINATION share/q-gears/ RENAME plugins.cfg PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ GROUP_WRITE WORLD_WRITE WORLD_READ)
-    install( FILES ${PROJECT_SOURCE_DIR}/output/resources.cfg_linux DESTINATION share/q-gears/ RENAME resources.cfg PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ GROUP_WRITE WORLD_WRITE WORLD_READ)
-    install( FILES ${PROJECT_SOURCE_DIR}/output/q-gears.cfg_linux DESTINATION share/q-gears/ RENAME q-gears.cfg PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ GROUP_WRITE WORLD_WRITE WORLD_READ)
+    install( FILES ${PROJECT_SOURCE_DIR}/q-sim.png DESTINATION ./share/pixmaps/ )
+    install( FILES ${PROJECT_SOURCE_DIR}/q-sim.desktop DESTINATION ./share/applications/ )
+    install( FILES ${PROJECT_SOURCE_DIR}/debian/menu DESTINATION share/menu/ RENAME q-sim )
+    install( FILES ${PROJECT_SOURCE_DIR}/output/plugins.cfg_linux DESTINATION share/q-sim/ RENAME plugins.cfg PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ GROUP_WRITE WORLD_WRITE WORLD_READ)
+    install( FILES ${PROJECT_SOURCE_DIR}/output/resources.cfg_linux DESTINATION share/q-sim/ RENAME resources.cfg PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ GROUP_WRITE WORLD_WRITE WORLD_READ)
+    install( FILES ${PROJECT_SOURCE_DIR}/output/q-sim.cfg_linux DESTINATION share/q-sim/ RENAME q-sim.cfg PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ GROUP_WRITE WORLD_WRITE WORLD_READ)
         
     if(EXISTS "/usr/lib/x86_64-linux-gnu/OGRE-1.9.0/RenderSystem_GL.so.1.9.0")
-      install( FILES /usr/lib/x86_64-linux-gnu/OGRE-1.9.0/RenderSystem_GL.so.1.9.0 DESTINATION lib/q-gears/plugins/ )
+      install( FILES /usr/lib/x86_64-linux-gnu/OGRE-1.9.0/RenderSystem_GL.so.1.9.0 DESTINATION lib/q-sim/plugins/ )
     elseif(EXISTS "/usr/lib/i386-linux-gnu/OGRE-1.9.0/RenderSystem_GL.so.1.9.0")
-      install( FILES /usr/lib/i386-linux-gnu/OGRE-1.9.0/RenderSystem_GL.so.1.9.0 DESTINATION lib/q-gears/plugins/ )
+      install( FILES /usr/lib/i386-linux-gnu/OGRE-1.9.0/RenderSystem_GL.so.1.9.0 DESTINATION lib/q-sim/plugins/ )
     endif()
         
     SET(CPACK_SOURCE_GENERATOR "TGZ;TZ")
@@ -366,7 +366,7 @@ elseif(UNIX)
     #we should need no longer need postinst since we have added extra install steps to what it would.
     #SET(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA ${CMAKE_SOURCE_DIR}/debian/postinst )
     #set the name to be debian package like.
-    SET(CPACK_PACKAGE_FILE_NAME "q-gears_${CPACK_PACKAGE_VERSION}-${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
+    SET(CPACK_PACKAGE_FILE_NAME "q-sim_${CPACK_PACKAGE_VERSION}-${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
     #SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libogre-1.9, libois,libboost-program-options,libboost-filesystem,libvorbis,libopenal,libboost-test,zlib1g")
     SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libogre-1.9.0, libois-1.3.0,libboost-program-options1.54.0,libboost-filesystem1.54.0,libvorbis0a,libvorbisfile3,libvorbisenc2,libopenal1,libboost-test1.54.0,zlib1g,liblua5.1-0")
 
@@ -390,7 +390,7 @@ SET_PROPERTY(TARGET LuaBind PROPERTY FOLDER "3rdparty")
 SET_PROPERTY(TARGET luajit PROPERTY FOLDER "3rdparty")
 SET_PROPERTY(TARGET minilua PROPERTY FOLDER "3rdparty")
 SET_PROPERTY(TARGET TinyXml PROPERTY FOLDER "3rdparty")
-SET_PROPERTY(TARGET Sudm_Lib PROPERTY FOLDER "q-gears")
+SET_PROPERTY(TARGET Sudm_Lib PROPERTY FOLDER "q-sim")
 
 
 INCLUDE(CPack)

@@ -51,12 +51,12 @@ before_script:
 
 before_install: 
 script: 
-- mkdir build_qgears
-- cd build_qgears
+- mkdir build_qsim
+- cd build_qsim
 
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export OGRE_HOME=/Users/travis/build/q-gears/q-gears/OgreSDK; fi
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export OGRE_SDK=/Users/travis/build/q-gears/q-gears/OgreSDK; fi
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export OIS_HOME=/Users/travis/build/q-gears/q-gears/Dependencies; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export OGRE_HOME=/Users/travis/build/rabbitgamerworks-bit/q-sim/OgreSDK; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export OGRE_SDK=/Users/travis/build/rabbitgamerworks-bit/q-sim/OgreSDK; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export OIS_HOME=/Users/travis/build/rabbitgamerworks-bit/q-sim/Dependencies; fi
 
 # Debug code coverage Linux build
 - if [[ "$TRAVIS_OS_NAME" == "linux" && "${COVERAGE}" == 1 ]]; then cmake -G"Unix Makefiles" .. -DCMAKE_BUILD_TYPE=Debug; fi
@@ -119,11 +119,11 @@ after_success:
 - chmod 700 ~/.ssh
 - md5sum ~/.ssh/id_rsa
 
-- if [[ "$TRAVIS_PULL_REQUEST" == 'false' && "${COVERITY_SCAN_BRANCH}" != 1 && "${COVERAGE}" != 1 && "$TRAVIS_OS_NAME" == "linux" && "$CXX" == "g++" ]]; then ssh -o StrictHostKeyChecking=no paul@itscovarr.com mkdir -p /var/www/storage/qgears/$hash/linux/; fi
-- if [[ "$TRAVIS_PULL_REQUEST" == 'false' && "${COVERITY_SCAN_BRANCH}" != 1 && "${COVERAGE}" != 1 && "$TRAVIS_OS_NAME" == "linux" && "$CXX" == "g++" ]]; then scp -o StrictHostKeyChecking=no ~/build/q-gears/q-gears/build_qgears/*.deb paul@itscovarr.com:/var/www/storage/qgears/$hash/linux/; fi
-- if [[ "$TRAVIS_PULL_REQUEST" == 'false' && "${COVERITY_SCAN_BRANCH}" != 1 && "${COVERAGE}" != 1 && "$TRAVIS_OS_NAME" == "linux" && "$CXX" == "g++" ]]; then scp -o StrictHostKeyChecking=no ~/build/q-gears/q-gears/build_qgears/*.tar.gz paul@itscovarr.com:/var/www/storage/qgears/$hash/linux/; fi
-- if [[ "$TRAVIS_PULL_REQUEST" == 'false' && "${COVERITY_SCAN_BRANCH}" != 1 && "${COVERAGE}" != 1 && "$TRAVIS_OS_NAME" == "osx" ]]; then ssh -o StrictHostKeyChecking=no paul@itscovarr.com mkdir -p /var/www/storage/qgears/$hash/mac/; fi
-- if [[ "$TRAVIS_PULL_REQUEST" == 'false' && "${COVERITY_SCAN_BRANCH}" != 1 && "${COVERAGE}" != 1 && "$TRAVIS_OS_NAME" == "osx" ]]; then scp -o StrictHostKeyChecking=no ~/build/q-gears/q-gears/build_qgears/*.dmg paul@itscovarr.com:/var/www/storage/qgears/$hash/mac/; fi
+- if [[ "$TRAVIS_PULL_REQUEST" == 'false' && "${COVERITY_SCAN_BRANCH}" != 1 && "${COVERAGE}" != 1 && "$TRAVIS_OS_NAME" == "linux" && "$CXX" == "g++" ]]; then ssh -o StrictHostKeyChecking=no paul@itscovarr.com mkdir -p /var/www/storage/qsim/$hash/linux/; fi
+- if [[ "$TRAVIS_PULL_REQUEST" == 'false' && "${COVERITY_SCAN_BRANCH}" != 1 && "${COVERAGE}" != 1 && "$TRAVIS_OS_NAME" == "linux" && "$CXX" == "g++" ]]; then scp -o StrictHostKeyChecking=no ~/build/rabbitgamerworks-bit/q-sim/build_qsim/*.deb paul@itscovarr.com:/var/www/storage/qsim/$hash/linux/; fi
+- if [[ "$TRAVIS_PULL_REQUEST" == 'false' && "${COVERITY_SCAN_BRANCH}" != 1 && "${COVERAGE}" != 1 && "$TRAVIS_OS_NAME" == "linux" && "$CXX" == "g++" ]]; then scp -o StrictHostKeyChecking=no ~/build/rabbitgamerworks-bit/q-sim/build_qsim/*.tar.gz paul@itscovarr.com:/var/www/storage/qsim/$hash/linux/; fi
+- if [[ "$TRAVIS_PULL_REQUEST" == 'false' && "${COVERITY_SCAN_BRANCH}" != 1 && "${COVERAGE}" != 1 && "$TRAVIS_OS_NAME" == "osx" ]]; then ssh -o StrictHostKeyChecking=no paul@itscovarr.com mkdir -p /var/www/storage/qsim/$hash/mac/; fi
+- if [[ "$TRAVIS_PULL_REQUEST" == 'false' && "${COVERITY_SCAN_BRANCH}" != 1 && "${COVERAGE}" != 1 && "$TRAVIS_OS_NAME" == "osx" ]]; then scp -o StrictHostKeyChecking=no ~/build/rabbitgamerworks-bit/q-sim/build_qsim/*.dmg paul@itscovarr.com:/var/www/storage/qsim/$hash/mac/; fi
 
 notifications: 
   on_failure: always
@@ -133,10 +133,10 @@ notifications:
 addons:
   coverity_scan:
     project:
-      name: "q-gears/q-gears"
+      name: "q-sim/q-sim"
       description: "Build submitted via Travis CI"
     notification_email: coverityscan@paulsapps.com
-    build_command_prepend: "mkdir qgears_build; cd qgears_build; cmake .. -DCMAKE_BUILD_TYPE=Release"
+    build_command_prepend: "mkdir qsim_build; cd qsim_build; cmake .. -DCMAKE_BUILD_TYPE=Release"
     build_command: "make -j4"
     branch_pattern: coverity_scan
 env: 

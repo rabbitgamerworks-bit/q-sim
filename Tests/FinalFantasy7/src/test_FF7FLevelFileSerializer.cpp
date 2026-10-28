@@ -27,25 +27,25 @@ THE SOFTWARE.
 
 #include <Ogre.h>
 
-#include "data/QGearsFLevelFileSerializer.h"
+#include "data/QSimFLevelFileSerializer.h"
 
-#include "data/QGearsBackgroundFileManager.h"
-#include "data/QGearsCameraMatrixFileManager.h"
-#include "data/QGearsHRCFileManager.h"
-#include "data/QGearsPaletteFileManager.h"
-#include "data/QGearsLZSFLevelFileManager.h"
+#include "data/QSimBackgroundFileManager.h"
+#include "data/QSimCameraMatrixFileManager.h"
+#include "data/QSimHRCFileManager.h"
+#include "data/QSimPaletteFileManager.h"
+#include "data/QSimLZSFLevelFileManager.h"
 #include "data/FF7ModelListFileManager.h"
-#include "map/QGearsBackground2DFileManager.h"
-#include "map/QGearsWalkmeshFileManager.h"
+#include "map/QSimBackground2DFileManager.h"
+#include "map/QSimWalkmeshFileManager.h"
 
 using namespace Ogre;
 
 BOOST_AUTO_TEST_CASE( read_file )
 {
-    class TestFile : public QGears::FLevelFile
+    class TestFile : public QSim::FLevelFile
     {
     public:
-        TestFile() : QGears::FLevelFile( NULL, "reference.flevel", 0, "General" ) {}
+        TestFile() : QSim::FLevelFile( NULL, "reference.flevel", 0, "General" ) {}
     };
 
     class TestTexture : public Texture
@@ -91,14 +91,14 @@ BOOST_AUTO_TEST_CASE( read_file )
     Root                                root("","");
     ResourceGroupManager               &rgm( ResourceGroupManager::getSingleton() );
     TestTextureManager                  tmgr;
-    QGears::CameraMatrixFileManager     cmgr;
-    QGears::WalkmeshFileManager         wmgr;
-    QGears::PaletteFileManager          pmgr;
-    QGears::BackgroundFileManager       bmgr;
-    QGears::Background2DFileManager     b2mgr;
-    QGears::FF7::ModelListFileManager   mmgr;
-    QGears::HRCFileManager              hmgr;
-    QGears::LZSFLevelFileManager        fmgr;
+    QSim::CameraMatrixFileManager     cmgr;
+    QSim::WalkmeshFileManager         wmgr;
+    QSim::PaletteFileManager          pmgr;
+    QSim::BackgroundFileManager       bmgr;
+    QSim::Background2DFileManager     b2mgr;
+    QSim::FF7::ModelListFileManager   mmgr;
+    QSim::HRCFileManager              hmgr;
+    QSim::LZSFLevelFileManager        fmgr;
     logMgr.createLog( "Default Log", true, true, true );
 
     rgm.addResourceLocation( "misc", "FileSystem" );
@@ -108,15 +108,15 @@ BOOST_AUTO_TEST_CASE( read_file )
     DataStreamPtr   stream( rgm.openResource( file.getName(), file.getGroup() ) );
     BOOST_REQUIRE( stream->isReadable() );
 
-    QGears::FLevelFileSerializer    ser;
+    QSim::FLevelFileSerializer    ser;
     ser.importFLevelFile( stream, &file );
     BOOST_CHECK_EQUAL( 757890, stream->tell() );
 
-    QGears::BackgroundFilePtr       background   ( file.getBackground() );
-    QGears::CameraMatrixFilePtr     camera_matrix( file.getCameraMatrix() );
-    QGears::FF7::ModelListFilePtr   model_list   ( file.getModelList() );
-    QGears::PaletteFilePtr          palette      ( file.getPalette() );
-    QGears::WalkmeshFilePtr         walkmesh     ( file.getWalkmesh() );
+    QSim::BackgroundFilePtr       background   ( file.getBackground() );
+    QSim::CameraMatrixFilePtr     camera_matrix( file.getCameraMatrix() );
+    QSim::FF7::ModelListFilePtr   model_list   ( file.getModelList() );
+    QSim::PaletteFilePtr          palette      ( file.getPalette() );
+    QSim::WalkmeshFilePtr         walkmesh     ( file.getWalkmesh() );
 
     BOOST_REQUIRE( !background.isNull() );
     BOOST_REQUIRE( !camera_matrix.isNull() );
@@ -144,7 +144,7 @@ BOOST_AUTO_TEST_CASE( read_file )
     //image->save( file.getName() + ".png" );
     delete image;
 
-    QGears::FLevelFilePtr lzs_file = fmgr.load( "reference_compressed.flevel", "General" ).staticCast<QGears::FLevelFile>();
+    QSim::FLevelFilePtr lzs_file = fmgr.load( "reference_compressed.flevel", "General" ).staticCast<QSim::FLevelFile>();
     BOOST_CHECK( !lzs_file->getPalette().isNull() );
     BOOST_CHECK( !lzs_file->getBackground().isNull() );
 

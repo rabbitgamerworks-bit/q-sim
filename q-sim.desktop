@@ -1,0 +1,13 @@
+[Desktop Entry]
+Categories=Application;Game;
+Encoding=UTF-8
+Exec=/usr/bin/q-sim-launcher
+#Path=/usr/share/q-sim
+GenericName=Q Gears
+Icon=q-sim.png
+Name=Q Gears
+StartupNotify=true
+Terminal=false
+Type=Application
+Version=0.21
+X-KDE-SubstituteUID=false

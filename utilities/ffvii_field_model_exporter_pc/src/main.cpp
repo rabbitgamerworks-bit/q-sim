@@ -30,11 +30,11 @@ THE SOFTWARE.
 
 #include "FF7FieldModelExporterPC.h"
 #include "common/TypeDefine.h"
-#include "common/QGearsStringUtil.h"
+#include "common/QSimStringUtil.h"
 
-#include "data/QGearsAFileManager.h"
-#include "data/QGearsHRCFileManager.h"
-#include "data/QGearsLZSFLevelFileManager.h"
+#include "data/QSimAFileManager.h"
+#include "data/QSimHRCFileManager.h"
+#include "data/QSimLZSFLevelFileManager.h"
 #include "common/FF7NameLookup.h"
 
 void attachMesh( Ogre::MeshPtr &mesh )
@@ -75,9 +75,9 @@ void exportMesh( const Ogre::MeshPtr &mesh )
         }
         ++i;
     }
-    QGears::String base_name;
-    QGears::StringUtil::splitFull( mesh->getName(), base_name );
-    mat_ser.exportQueued( base_name + QGears::EXT_MATERIAL );
+    QSim::String base_name;
+    QSim::StringUtil::splitFull( mesh->getName(), base_name );
+    mat_ser.exportQueued( base_name + QSim::EXT_MATERIAL );
 }
 
 
@@ -86,25 +86,25 @@ int main( int argc, char *argv[] )
 {
     try
     {
-        QGears::FF7::FieldModelExporterPC app(argc, argv);
+        QSim::FF7::FieldModelExporterPC app(argc, argv);
         if (!app.initOgre()) return 0;
 
         Ogre::SceneManager*         scene_manager(Ogre::Root::getSingleton().createSceneManager(Ogre::ST_GENERIC, "Scene"));
-        QGears::AFilePtr            a;
-        QGears::HRCFilePtr          hrc = QGears::HRCFileManager::getSingleton().load("adda.hrc", "FFVII").staticCast<QGears::HRCFile>();
-        QGears::AFileManager       &afl_mgr(QGears::AFileManager::getSingleton());
+        QSim::AFilePtr            a;
+        QSim::HRCFilePtr          hrc = QSim::HRCFileManager::getSingleton().load("adda.hrc", "FFVII").staticCast<QSim::HRCFile>();
+        QSim::AFileManager       &afl_mgr(QSim::AFileManager::getSingleton());
 
-        auto meshName = QGears::FF7::NameLookup::model("adda.hrc") + ".mesh";
+        auto meshName = QSim::FF7::NameLookup::model("adda.hrc") + ".mesh";
 
         Ogre::MeshPtr mesh(Ogre::MeshManager::getSingleton().load(meshName, "FFVII"));
         Ogre::SkeletonPtr skeleton(mesh->getSkeleton());
 
 
-        a = afl_mgr.load("aeae.a", "FFVII").staticCast<QGears::AFile>();
+        a = afl_mgr.load("aeae.a", "FFVII").staticCast<QSim::AFile>();
         a->addTo(skeleton, "Idle");
-        a = afl_mgr.load("aeaf.a", "FFVII").staticCast<QGears::AFile>();
+        a = afl_mgr.load("aeaf.a", "FFVII").staticCast<QSim::AFile>();
         a->addTo(skeleton, "Walk");
-        a = afl_mgr.load("aeba.a", "FFVII").staticCast<QGears::AFile>();
+        a = afl_mgr.load("aeba.a", "FFVII").staticCast<QSim::AFile>();
         a->addTo(skeleton, "Run");
 
 
@@ -114,13 +114,13 @@ int main( int argc, char *argv[] )
 
         entitys[0]->setVisible(true);
 
-        QGears::LZSFLevelFileManager   &fmgr(QGears::LZSFLevelFileManager::getSingleton());
-        // QGears::FLevelFilePtr           f = fmgr.load( "ancnt1", "FFVII" ).staticCast<QGears::FLevelFile>();
+        QSim::LZSFLevelFileManager   &fmgr(QSim::LZSFLevelFileManager::getSingleton());
+        // QSim::FLevelFilePtr           f = fmgr.load( "ancnt1", "FFVII" ).staticCast<QSim::FLevelFile>();
 
         /*
         mesh = Ogre::MeshManager::getSingleton().load(meshName, "FFVII");
         skeleton = mesh->getSkeleton();
-        a = afl_mgr.load("bvjf.a", "FFVII").staticCast<QGears::AFile>();
+        a = afl_mgr.load("bvjf.a", "FFVII").staticCast<QSim::AFile>();
         a->addTo(skeleton, "JumpFromTrain");
         */
 

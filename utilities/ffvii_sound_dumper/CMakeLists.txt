@@ -19,7 +19,7 @@ set(SOURCE_FILES
 )
 
 add_definitions(
-    -DQGEARS_ADD_MANAGERS
+    -DQSIM_ADD_MANAGERS
 )
 
 add_executable(ff7_sound_dumper
@@ -41,8 +41,8 @@ endif()
 
 set(LIBRARIES
     Utility
-    QGearsMain
-    q-gears-data
+    QSimMain
+    q-sim-data
 )
 target_link_libraries(ff7_sound_dumper    ${LIBRARIES})
 

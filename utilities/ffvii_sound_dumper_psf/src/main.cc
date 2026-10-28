@@ -19,7 +19,7 @@ extern "C"
 //#include <upse.h>
 }
 #include <tinyxml/tinyxml.h>
-#ifdef QGears_SOUND
+#ifdef QSim_SOUND
 #include <vorbis/codec.h>
 #include <vorbis/vorbisenc.h>
 #endif
@@ -203,7 +203,7 @@ struct ChannelParam
 
 struct VorbisEncoderContext
 {
-#ifdef QGears_SOUND
+#ifdef QSim_SOUND
 	vorbis_info vi;
 	vorbis_dsp_state vds;
 	vorbis_comment vc;
@@ -480,7 +480,7 @@ void akao_frame_print(const vector<Channel> &a_channels, u8 *a_frame, u32 a_fram
 	cout << "reverb mode: " << ESC_GREEN << header.reverb_mode << ESC_RESET << endl;
 
 	cout << hex;
-#ifdef QGears_SOUND
+#ifdef QSim_SOUND
 	cout << "date: " << ESC_GREEN
 		<< setw(2) << (int)header.timestamp.year    << '/'
 		<< setw(2) << (int)header.timestamp.month   << '/'
@@ -593,7 +593,7 @@ void akao_extract_cb(void *a_data, path a_file)
 			AkaoHeader header;
 			memcpy(header.magic, g_MAGIC, strlen(g_MAGIC));
 			memcpy(&header.id, &buffer[input_offset], sizeof(header) - sizeof(header.magic));
-#ifdef QGears_SOUND
+#ifdef QSim_SOUND
 			if(akao_timestamp_valid(header.timestamp))
 			{
 				input_offset += sizeof(header) - sizeof(header.magic);
@@ -1215,7 +1215,7 @@ int upse_close_cb(void *ptr)
 int vorbis_encoder_init(VorbisEncoderContext &ctx, path a_ogg_fn, u32 a_attack_size, float a_ogg_quality)
 {
 	int result = 1;
-#ifdef QGears_SOUND
+#ifdef QSim_SOUND
 	ctx.ofs_file.open(a_ogg_fn.string().c_str(), ios::binary);
 	if(!ctx.ofs_file.is_open())
 		return result;
@@ -1260,7 +1260,7 @@ int vorbis_encoder_init(VorbisEncoderContext &ctx, path a_ogg_fn, u32 a_attack_s
 
 void vorbis_encoder_free(VorbisEncoderContext &ctx)
 {
-#ifdef QGears_SOUND
+#ifdef QSim_SOUND
 	ogg_stream_clear(&ctx.os);
 	vorbis_block_clear(&ctx.vb);
 	vorbis_comment_clear(&ctx.vc);
@@ -1273,7 +1273,7 @@ void vorbis_encoder_free(VorbisEncoderContext &ctx)
 int vorbis_encoder_update(VorbisEncoderContext &ctx, s16 *a_samples, u32 a_samples_count, u32 a_channels_count, bool a_end)
 {
 	int result = 0;
-#ifdef QGears_SOUND
+#ifdef QSim_SOUND
 	// 3rd argument done in tricky way because we can encode audio in chunks later
 	bool end = a_end;
 	for(u32 samples = a_samples_count; samples || end; samples = 0)

@@ -12,7 +12,7 @@ set(SOURCE_FILES
 )
 
 #add_definitions(
-#    -DQGEARS_ADD_MANAGERS
+#    -DQSIM_ADD_MANAGERS
 #)
 
 add_executable(ff7_field_model_exporter_pc
@@ -33,9 +33,9 @@ if(WIN32)
 endif()
 
 set(LIBRARIES
-    q-gears-data
+    q-sim-data
 
-    QGearsMain
+    QSimMain
 
 
     ${OGRE_LIBRARIES}

@@ -1,7 +1,7 @@
 include_directories(
-    ${QGears_INCLUDE_DIRS}
-    ${QGears_SOURCE_DIR}/QGearsMain/include
-    ${QGears_SOURCE_DIR}/SupportedGames/FinalFantasy7/include
+    ${QSim_INCLUDE_DIRS}
+    ${QSim_SOURCE_DIR}/QSimMain/include
+    ${QSim_SOURCE_DIR}/SupportedGames/FinalFantasy7/include
     ${CMAKE_CURRENT_SOURCE_DIR}/common/include
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${ZLIB_INCLUDE_DIRS}
@@ -10,7 +10,7 @@ include_directories(
 # define header and source files for the library
 set(HEADER_FILES
 ./common/FontFile.h
-./common/include/QGearsUtility.h
+./common/include/QSimUtility.h
 ./common/Logger.h
 ./common/Surface.h
 ./common/TimToVram.h
@@ -31,7 +31,7 @@ set(SOURCE_FILES
 ./common/TimToVram.cpp
 ./common/Vram.cpp
 ./common/OgreBase.cpp
-./common/src/QGearsUtility.cpp
+./common/src/QSimUtility.cpp
 )
 
 add_library(Utility STATIC
@@ -59,7 +59,7 @@ add_subdirectory(ffvii_sound_dumper)
 add_subdirectory(ffvii_sound_dumper_psf)
 add_subdirectory(flevel)
 add_subdirectory(lzs)
-add_subdirectory(q-gears-launcher)
+add_subdirectory(q-sim-launcher)
 add_subdirectory(xeno_cd_extract)
 add_subdirectory(xeno_model_exporter)
 add_subdirectory(xeno_script_dumper)

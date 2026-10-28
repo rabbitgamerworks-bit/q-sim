@@ -1,26 +1,26 @@
-set(QGearsMain_SOURCE_DIR ../../QGearsMain)
+set(QSimMain_SOURCE_DIR ../../QSimMain)
 
 # define header and source files for the library
 set(HEADER_FILES
-  ${QGearsMain_SOURCE_DIR}/include/QGearsPrerequisites.h
-  ${QGearsMain_SOURCE_DIR}/include/common/QGearsManualObject.h
-  ${QGearsMain_SOURCE_DIR}/include/common/QGearsStringUtil.h
-  ${QGearsMain_SOURCE_DIR}/include/common/TypeDefine.h
-  include/QGearsDataPlugin.h
+  ${QSimMain_SOURCE_DIR}/include/QSimPrerequisites.h
+  ${QSimMain_SOURCE_DIR}/include/common/QSimManualObject.h
+  ${QSimMain_SOURCE_DIR}/include/common/QSimStringUtil.h
+  ${QSimMain_SOURCE_DIR}/include/common/TypeDefine.h
+  include/QSimDataPlugin.h
 )
 set(SOURCE_FILES
-  ${QGearsMain_SOURCE_DIR}/src/common/QGearsManualObject.cpp
-  ${QGearsMain_SOURCE_DIR}/src/common/QGearsStringUtil.cpp
-  ${QGearsMain_SOURCE_DIR}/src/common/TypeDefine.cpp
-  src/QGearsDataPlugin.cpp
-  src/QGearsDataPluginDll.cpp
+  ${QSimMain_SOURCE_DIR}/src/common/QSimManualObject.cpp
+  ${QSimMain_SOURCE_DIR}/src/common/QSimStringUtil.cpp
+  ${QSimMain_SOURCE_DIR}/src/common/TypeDefine.cpp
+  src/QSimDataPlugin.cpp
+  src/QSimDataPluginDll.cpp
 )
 
 include_directories(
     ${OIS_INCLUDE_DIRS}
     ${OGRE_INCLUDE_DIRS}
     ${OGRE_SAMPLES_INCLUDEPATH}
-    ${QGearsMain_SOURCE_DIR}/include
+    ${QSimMain_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../../dependencies
 )
@@ -32,7 +32,7 @@ add_library(DataPlugin MODULE
   ${HEADER_FILES}
   ${SOURCE_FILES}
 )
-SET_PROPERTY(TARGET DataPlugin PROPERTY FOLDER "q-gears")
+SET_PROPERTY(TARGET DataPlugin PROPERTY FOLDER "q-sim")
 
 set_target_properties(DataPlugin PROPERTIES
   PREFIX ${PLUGIN_PREFIX}
@@ -42,18 +42,18 @@ set_target_properties(DataPlugin PROPERTIES
 set(LIBRARIES
   ${OGRE_LIBRARIES} 
   FinalFantasy7
-  q-gears-data
+  q-sim-data
 )
 
 target_link_libraries(DataPlugin ${LIBRARIES})
 
-if(NOT QGEARS_STATIC)
+if(NOT QSIM_STATIC)
   set_target_properties(DataPlugin PROPERTIES
-    COMPILE_DEFINITIONS QGEARS_DATAPLUGIN_EXPORTS
+    COMPILE_DEFINITIONS QSIM_DATAPLUGIN_EXPORTS
   )
     if(WIN32 OR APPLE)
       install(TARGETS DataPlugin LIBRARY DESTINATION .)
     else()
-      install(TARGETS DataPlugin LIBRARY DESTINATION ./lib/q-gears/plugins/ )
+      install(TARGETS DataPlugin LIBRARY DESTINATION ./lib/q-sim/plugins/ )
     endif()
 endif()

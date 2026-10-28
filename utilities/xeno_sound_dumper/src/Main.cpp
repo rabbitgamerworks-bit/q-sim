@@ -136,7 +136,7 @@ main( int argc, char *argv[] )
     root->initialise( false );
     Ogre::NameValuePairList misc;
     misc[ "title" ] = "Xenogears SoundDumper";
-    window = root->createRenderWindow( "QGearsWindow", 800, 600, false, &misc );
+    window = root->createRenderWindow( "QSimWindow", 800, 600, false, &misc );
 
 
 

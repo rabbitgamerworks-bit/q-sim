@@ -7,7 +7,7 @@
 
 #include "common/TypeDefine.h"
 
-using namespace QGears;
+using namespace QSim;
 
 /*
 FontFile::FontFile(const Ogre::String& file):

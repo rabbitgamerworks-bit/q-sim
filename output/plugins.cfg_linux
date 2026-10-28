@@ -1,6 +1,6 @@
 # Define plugin folder
-PluginFolder=/usr/lib/q-gears/plugins/
-#PluginFolder=~/.q-gears/plugins
+PluginFolder=/usr/lib/q-sim/plugins/
+#PluginFolder=~/.q-sim/plugins
 
 # Define plugins
     Plugin=RenderSystem_GL

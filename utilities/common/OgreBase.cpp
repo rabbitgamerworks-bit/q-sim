@@ -11,7 +11,7 @@ void
 InitializeOgreBase( const Ogre::String& name )
 {
     Ogre::LogManager* log_manager = new Ogre::LogManager();
-    log_manager->createLog( "q-gears.log", true, true );
+    log_manager->createLog( "q-sim.log", true, true );
     log_manager->getDefaultLog()->setLogDetail( ( Ogre::LoggingLevel )3 );
 
     Ogre::String ressource_cfg("");
@@ -73,7 +73,7 @@ InitializeOgreBase( const Ogre::String& name )
     root->initialise( false );
     Ogre::NameValuePairList misc;
     misc[ "title" ] = name;
-    window = root->createRenderWindow( "QGearsWindow", 800, 600, false, &misc );
+    window = root->createRenderWindow( "QSimWindow", 800, 600, false, &misc );
 
 
     // initialize resource

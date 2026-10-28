@@ -216,7 +216,7 @@ main(int argc, char *argv[])
     Ogre::Camera*       camera;
     Ogre::Viewport*     viewport;
 
-    root = new Ogre::Root("plugins.cfg", "q-gears.cfg", "ogre q-gears.log");
+    root = new Ogre::Root("plugins.cfg", "q-sim.cfg", "ogre q-sim.log");
 
     if (root->restoreConfig() == true || root->showConfigDialog() == true)
     {

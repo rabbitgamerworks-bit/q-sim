@@ -33,7 +33,7 @@ THE SOFTWARE.
 
 #include <OgreDataStream.h>
 
-#include "data/QGearsTexFile.h"
+#include "data/QSimTexFile.h"
 
 using std::back_inserter;
 using std::copy;
@@ -55,7 +55,7 @@ void pintFileInfo( const bfs::path &tex_path )
     Ogre::FileStreamDataStream *stream( OGRE_NEW Ogre::FileStreamDataStream( ifs ) );
     Ogre::DataStreamPtr input( stream );
 
-    QGears::TexFile tex;
+    QSim::TexFile tex;
     tex.readHeader( input );
 
     cout << endl << " size: "

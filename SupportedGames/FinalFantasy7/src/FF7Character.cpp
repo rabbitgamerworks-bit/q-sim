@@ -74,7 +74,7 @@ namespace FFVII
 
     //-------------------------------------------------------------------------
     Character::CharacterId
-    Character::getIdByName( const QGears::String& name )
+    Character::getIdByName( const QSim::String& name )
     {
         ChracterIdLookupMap::const_iterator entry;
         entry = ms_character_id_lookups.find( name );

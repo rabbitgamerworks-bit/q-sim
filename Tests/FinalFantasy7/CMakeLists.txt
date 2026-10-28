@@ -1,16 +1,16 @@
 file(COPY misc DESTINATION .)
 
 include_directories(
-    ${QGears_INCLUDE_DIRS}
-    ${QGearsMain_SOURCE_DIR}/include
-    ${QGears_SOURCE_DIR}/SupportedGames/FinalFantasy7/include
+    ${QSim_INCLUDE_DIRS}
+    ${QSimMain_SOURCE_DIR}/include
+    ${QSim_SOURCE_DIR}/SupportedGames/FinalFantasy7/include
 )
 
 set(LIBRARIES
-    ${QGears_TEST_LIBRARIES}
+    ${QSim_TEST_LIBRARIES}
     FinalFantasy7
-	QGearsMain
-	q-gears-data
+	QSimMain
+	q-sim-data
 )
 
 add_executable(TestFF7FLevelFileSerializer

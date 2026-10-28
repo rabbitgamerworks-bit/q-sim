@@ -1,4 +1,4 @@
-msbuild /m QGears.sln /p:Configuration=Release
+msbuild /m QSim.sln /p:Configuration=Release
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 cpack -C "Release"
@@ -15,7 +15,7 @@ cd %CURRENT%
 mkdir windows
 cd .. 
 dir
-move q-gears\build\*.msi %CURRENT%\windows
+move q-sim\build\*.msi %CURRENT%\windows
 upload %CURRENT%
 
 

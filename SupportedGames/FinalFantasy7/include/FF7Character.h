@@ -50,10 +50,10 @@ namespace FFVII
            ,UNKNOWN = 9
         };
 
-        static CharacterId getIdByName( const QGears::String& name );
+        static CharacterId getIdByName( const QSim::String& name );
 
     private:
-        typedef std::map<QGears::String, CharacterId> ChracterIdLookupMap;
+        typedef std::map<QSim::String, CharacterId> ChracterIdLookupMap;
 
         static          ChracterIdLookupMap createLookupMap();
         static const    ChracterIdLookupMap ms_character_id_lookups;

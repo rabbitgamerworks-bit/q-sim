@@ -17,7 +17,7 @@ set(SOURCE_FILES
 )
 
 add_definitions(
-    -DQGEARS_ADD_MANAGERS
+    -DQSIM_ADD_MANAGERS
 )
 
 add_executable(ff9_model_exporter
@@ -39,8 +39,8 @@ endif()
 
 set(LIBRARIES
     Utility
-    QGearsMain
-    q-gears-data
+    QSimMain
+    q-sim-data
 )
 target_link_libraries(ff9_model_exporter    ${LIBRARIES})
 
